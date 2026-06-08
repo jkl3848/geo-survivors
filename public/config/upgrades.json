@@ -1,0 +1,77 @@
+{
+  "modifierMode": "multiplicative",
+  "pool": [
+    {
+      "id": "sharp_edge",
+      "name": "Sharp Edge",
+      "description": "+15% attack",
+      "modifiers": { "attack": 0.15 },
+      "maxStacks": 5
+    },
+    {
+      "id": "hardened_shell",
+      "name": "Hardened Shell",
+      "description": "+15% defense",
+      "modifiers": { "defense": 0.15 },
+      "maxStacks": 5
+    },
+    {
+      "id": "thick_hide",
+      "name": "Thick Hide",
+      "description": "+20% max HP",
+      "modifiers": { "hp": 0.20 },
+      "maxStacks": 5
+    },
+    {
+      "id": "regeneration",
+      "name": "Regeneration",
+      "description": "+25% health regen",
+      "modifiers": { "healthRegen": 0.25 },
+      "maxStacks": 5
+    },
+    {
+      "id": "swift_steps",
+      "name": "Swift Steps",
+      "description": "+10% speed",
+      "modifiers": { "speed": 0.10 },
+      "maxStacks": 5
+    },
+    {
+      "id": "rapid_fire",
+      "name": "Rapid Fire",
+      "description": "+12% attack speed",
+      "modifiers": { "attackSpeed": 0.12 },
+      "maxStacks": 5
+    },
+    {
+      "id": "piercing_shot",
+      "name": "Piercing Shot",
+      "description": "+1 projectile pierce",
+      "modifiers": { "pierce": 1 },
+      "maxStacks": 3,
+      "modifierMode": "additive"
+    },
+    {
+      "id": "big_bullets",
+      "name": "Big Bullets",
+      "description": "+20% projectile size",
+      "modifiers": { "projectileRadius": 0.20 },
+      "maxStacks": 4
+    },
+    {
+      "id": "magnet",
+      "name": "XP Magnet",
+      "description": "+30% pickup radius",
+      "modifiers": { "pickupRadius": 0.30 },
+      "maxStacks": 4
+    },
+    {
+      "id": "vitality",
+      "name": "Vitality",
+      "description": "Heal 25% max HP",
+      "modifiers": { "healPercent": 0.25 },
+      "maxStacks": 3,
+      "modifierMode": "instant"
+    }
+  ]
+}

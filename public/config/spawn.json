@@ -1,0 +1,18 @@
+{
+  "durationSeconds": 600,
+  "spawnInterval": {
+    "start": 2.5,
+    "end": 0.25
+  },
+  "maxEnemies": 400,
+  "enemyLevel": {
+    "everySeconds": 30,
+    "statScalePerLevel": 0.08
+  },
+  "enemyWeights": {
+    "circle": 0.4,
+    "square": 0.35,
+    "triangle": 0.25
+  },
+  "spawnPadding": 20
+}

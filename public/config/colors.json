@@ -1,0 +1,51 @@
+{
+  "colors": [
+    {
+      "id": "azure",
+      "name": "Azure",
+      "hex": "#5dade2",
+      "unlockedByDefault": true,
+      "traits": {}
+    },
+    {
+      "id": "crimson",
+      "name": "Crimson",
+      "hex": "#e74c3c",
+      "unlockedByDefault": false,
+      "unlockCondition": "survive_3_min",
+      "traits": { "attack": 0.08 }
+    },
+    {
+      "id": "emerald",
+      "name": "Emerald",
+      "hex": "#2ecc71",
+      "unlockedByDefault": false,
+      "unlockCondition": "survive_5_min",
+      "traits": { "healthRegen": 0.15 }
+    },
+    {
+      "id": "gold",
+      "name": "Gold",
+      "hex": "#f1c40f",
+      "unlockedByDefault": false,
+      "unlockCondition": "win",
+      "traits": { "attackSpeed": 0.10, "speed": 0.05 }
+    },
+    {
+      "id": "violet",
+      "name": "Violet",
+      "hex": "#9b59b6",
+      "unlockedByDefault": false,
+      "unlockCondition": "survive_8_min",
+      "traits": { "defense": 0.12 }
+    },
+    {
+      "id": "obsidian",
+      "name": "Obsidian",
+      "hex": "#566573",
+      "unlockedByDefault": false,
+      "unlockCondition": "reach_level_10",
+      "traits": { "hp": 0.15, "defense": 0.08 }
+    }
+  ]
+}

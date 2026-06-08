@@ -1,0 +1,44 @@
+{
+  "circle": {
+    "id": "circle",
+    "color": "#3498db",
+    "outline": "#1a5276",
+    "radius": 12,
+    "behavior": "chase",
+    "xpValue": 5,
+    "baseStats": {
+      "hp": 50,
+      "attack": 5,
+      "defense": 3,
+      "speed": 60
+    }
+  },
+  "square": {
+    "id": "square",
+    "color": "#2ecc71",
+    "outline": "#1e8449",
+    "radius": 11,
+    "behavior": "chase",
+    "xpValue": 6,
+    "baseStats": {
+      "hp": 40,
+      "attack": 6,
+      "defense": 8,
+      "speed": 55
+    }
+  },
+  "triangle": {
+    "id": "triangle",
+    "color": "#e74c3c",
+    "outline": "#922b21",
+    "radius": 10,
+    "behavior": "chase",
+    "xpValue": 7,
+    "baseStats": {
+      "hp": 30,
+      "attack": 10,
+      "defense": 2,
+      "speed": 90
+    }
+  }
+}

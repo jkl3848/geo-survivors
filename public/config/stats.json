@@ -1,0 +1,46 @@
+{
+  "baseStats": {
+    "attack": 10,
+    "defense": 5,
+    "hp": 100,
+    "healthRegen": 0.5,
+    "speed": 180,
+    "attackSpeed": 1.2
+  },
+  "shapeWeights": {
+    "area": {
+      "speed": -0.35,
+      "hp": 0.25,
+      "defense": 0.15
+    },
+    "roundness": {
+      "hp": 0.40,
+      "healthRegen": 0.50
+    },
+    "pointiness": {
+      "attack": 0.45,
+      "attackSpeed": 0.20
+    }
+  },
+  "limits": {
+    "minBodyPixels": 20,
+    "maxArea": 4096
+  },
+  "damageFormula": {
+    "defenseDivisor": 100,
+    "minDamage": 1
+  },
+  "player": {
+    "minDisplaySize": 14,
+    "maxDisplaySize": 22,
+    "hitFlashDuration": 0.15,
+    "pickupRadius": 24,
+    "projectileSpeed": 400,
+    "projectileRadius": 4,
+    "contactCooldown": 0.5
+  },
+  "xp": {
+    "baseToLevel": 50,
+    "levelGrowth": 1.35
+  }
+}
