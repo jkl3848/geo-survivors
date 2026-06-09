@@ -3,13 +3,14 @@ import { Game } from './game/Game.js';
 import { MusicPlayer } from './audio/MusicPlayer.js';
 
 async function loadConfigs() {
+  const base = import.meta.env.BASE_URL;
   const [stats, enemies, upgrades, spawn, music, colors] = await Promise.all([
-    fetch('/config/stats.json').then((r) => r.json()),
-    fetch('/config/enemies.json').then((r) => r.json()),
-    fetch('/config/upgrades.json').then((r) => r.json()),
-    fetch('/config/spawn.json').then((r) => r.json()),
-    fetch('/config/music.json').then((r) => r.json()),
-    fetch('/config/colors.json').then((r) => r.json()),
+    fetch(`${base}config/stats.json`).then((r) => r.json()),
+    fetch(`${base}config/enemies.json`).then((r) => r.json()),
+    fetch(`${base}config/upgrades.json`).then((r) => r.json()),
+    fetch(`${base}config/spawn.json`).then((r) => r.json()),
+    fetch(`${base}config/music.json`).then((r) => r.json()),
+    fetch(`${base}config/colors.json`).then((r) => r.json()),
   ]);
   return { stats, enemies, upgrades, spawn, music, colors };
 }

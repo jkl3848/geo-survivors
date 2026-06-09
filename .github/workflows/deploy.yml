@@ -1,0 +1,62 @@
+name: Deploy to game.jclamoreaux.com
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout geo-survivors
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Build geo-survivors
+        run: |
+          npm ci
+          BASE_PATH=/geo-survivors/ npm run build
+
+      - name: Checkout js-rpg-game
+        uses: actions/checkout@v4
+        with:
+          repository: jkl3848/js-rpg-game
+          token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+          path: js-rpg-game
+
+      - name: Build js-rpg-game
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: yarn
+          cache-dependency-path: js-rpg-game/yarn.lock
+
+      - name: Build RPG site
+        working-directory: js-rpg-game
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+
+      - name: Combine site output
+        run: |
+          mkdir -p js-rpg-game/dist/geo-survivors
+          cp -r dist/. js-rpg-game/dist/geo-survivors/
+          cp js-rpg-game/CNAME js-rpg-game/dist/CNAME
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+          external_repository: jkl3848/js-rpg-game
+          publish_dir: ./js-rpg-game/dist
+          publish_branch: gh-pages
