@@ -5,7 +5,7 @@
     "outline": "#1a5276",
     "radius": 12,
     "behavior": "chase",
-    "xpValue": 7,
+    "xpValue": 8,
     "baseStats": {
       "hp": 50,
       "attack": 5,
@@ -19,7 +19,7 @@
     "outline": "#1e8449",
     "radius": 11,
     "behavior": "chase",
-    "xpValue": 6,
+    "xpValue": 7,
     "baseStats": {
       "hp": 40,
       "attack": 6,
@@ -33,7 +33,7 @@
     "outline": "#922b21",
     "radius": 10,
     "behavior": "chase",
-    "xpValue": 5,
+    "xpValue": 6,
     "baseStats": {
       "hp": 30,
       "attack": 10,
@@ -63,7 +63,7 @@
     "radius": 38,
     "behavior": "boss_square",
     "isBoss": true,
-    "xpValue": 80,
+    "xpValue": 100,
     "baseStats": {
       "hp": 800,
       "attack": 15,
