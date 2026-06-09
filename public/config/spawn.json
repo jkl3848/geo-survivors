@@ -7,17 +7,15 @@
   "maxEnemies": 400,
   "enemyLevel": {
     "everySeconds": 30,
-    "statScalePerLevel": 0.08
+    "statScalePerLevel": 0.13
   },
   "enemyWeights": {
     "circle": 0.35,
-    "square": 0.30,
+    "square": 0.3,
     "triangle": 0.25,
-    "hexagon": 0.10
+    "hexagon": 0.1
   },
   "spawnPadding": 20,
-  "bossSchedule": [
-    { "atSeconds": 300, "typeId": "boss_square" }
-  ],
+  "bossSchedule": [{ "atSeconds": 300, "typeId": "boss_square" }],
   "finalBossId": "boss_octagon"
 }

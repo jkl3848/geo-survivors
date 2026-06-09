@@ -1,4 +1,4 @@
-import { lerp } from '../core/Vec2.js';
+import { lerp } from "../core/Vec2.js";
 
 export class SpawnSystem {
   constructor(spawnConfig, enemyDefs, enemyPool) {
@@ -51,7 +51,7 @@ export class SpawnSystem {
   }
 
   getFinalBossId() {
-    return this.config.finalBossId || 'boss_octagon';
+    return this.config.finalBossId || "boss_octagon";
   }
 
   _pickEnemyType() {
@@ -59,7 +59,8 @@ export class SpawnSystem {
       const def = this.enemyDefs[entry.id];
       return !def.minEnemyLevel || this.enemyLevel >= def.minEnemyLevel;
     });
-    if (available.length === 0) return this.enemyDefs[this._weightEntries[0].id];
+    if (available.length === 0)
+      return this.enemyDefs[this._weightEntries[0].id];
 
     let total = 0;
     for (const entry of available) total += entry.weight;
@@ -76,10 +77,14 @@ export class SpawnSystem {
     const pad = this.config.spawnPadding;
     const edge = Math.floor(Math.random() * 4);
     switch (edge) {
-      case 0: return { x: Math.random() * worldW, y: -pad };
-      case 1: return { x: worldW + pad, y: Math.random() * worldH };
-      case 2: return { x: Math.random() * worldW, y: worldH + pad };
-      default: return { x: -pad, y: Math.random() * worldH };
+      case 0:
+        return { x: Math.random() * worldW, y: -pad };
+      case 1:
+        return { x: worldW + pad, y: Math.random() * worldH };
+      case 2:
+        return { x: Math.random() * worldW, y: worldH + pad };
+      default:
+        return { x: -pad, y: Math.random() * worldH };
     }
   }
 
@@ -89,19 +94,23 @@ export class SpawnSystem {
 
   update(dt, worldW, worldH) {
     this.elapsed += dt;
-    this.enemyLevel = Math.floor(this.elapsed / this.config.enemyLevel.everySeconds);
+    this.enemyLevel = Math.floor(
+      this.elapsed / this.config.enemyLevel.everySeconds,
+    );
 
     this._checkBossSpawns(worldW, worldH);
 
     const progress = this.getProgress();
-    const interval = lerp(
-      this.config.spawnInterval.start,
+    const interval = Math.max(
+      this.config.spawnInterval.start - this.enemyLevel * 0.24,
       this.config.spawnInterval.end,
-      progress,
     );
 
     this.spawnTimer -= dt;
     while (this.spawnTimer <= 0) {
+      console.log(
+        `Spawning enemy at ${this.elapsed.toFixed(2)}s (level ${this.enemyLevel})`,
+      );
       this.spawnTimer += interval;
       this._trySpawn(worldW, worldH);
     }
@@ -178,9 +187,17 @@ export class SpawnSystem {
   _trySpawn(worldW, worldH) {
     const typeDef = this._pickEnemyType();
     const pos = this._spawnPosition(worldW, worldH);
-    const levelScale = this.enemyLevel * this.config.enemyLevel.statScalePerLevel;
+    const levelScale =
+      this.enemyLevel * this.config.enemyLevel.statScalePerLevel;
     const active = this.enemyPool.getActive();
-    const clearPos = this._findClearPosition(pos.x, pos.y, typeDef.radius, worldW, worldH, active);
+    const clearPos = this._findClearPosition(
+      pos.x,
+      pos.y,
+      typeDef.radius,
+      worldW,
+      worldH,
+      active,
+    );
     if (!clearPos) return;
 
     this._spawnEnemy(typeDef, clearPos.x, clearPos.y, levelScale);
@@ -191,10 +208,18 @@ export class SpawnSystem {
     if (!typeDef) return null;
 
     const pos = this._bossSpawnPosition(worldW, worldH);
-    const levelScale = this.enemyLevel * this.config.enemyLevel.statScalePerLevel;
+    const levelScale =
+      this.enemyLevel * this.config.enemyLevel.statScalePerLevel;
     const active = this.enemyPool.getActive();
-    const clearPos = this._findClearPosition(pos.x, pos.y, typeDef.radius, worldW, worldH, active)
-      || pos;
+    const clearPos =
+      this._findClearPosition(
+        pos.x,
+        pos.y,
+        typeDef.radius,
+        worldW,
+        worldH,
+        active,
+      ) || pos;
 
     return this._spawnEnemy(typeDef, clearPos.x, clearPos.y, levelScale, {
       sizeFactor: 1,
@@ -212,11 +237,18 @@ export class SpawnSystem {
     const active = this.enemyPool.getActive();
 
     for (let i = 0; i < count; i++) {
-      const angle = (Math.PI * 2 / count) * i;
+      const angle = ((Math.PI * 2) / count) * i;
       const sx = x + Math.cos(angle) * spawnDist;
       const sy = y + Math.sin(angle) * spawnDist;
       const minionRadius = triangleDef.radius * 0.55;
-      const clearPos = this._findClearPosition(sx, sy, minionRadius, 0, 0, active);
+      const clearPos = this._findClearPosition(
+        sx,
+        sy,
+        minionRadius,
+        0,
+        0,
+        active,
+      );
       if (!clearPos) continue;
 
       this._spawnEnemy(triangleDef, clearPos.x, clearPos.y, levelScale, {
@@ -240,13 +272,22 @@ export class SpawnSystem {
     const active = this.enemyPool.getActive();
 
     for (let i = 0; i < count; i++) {
-      const angle = (Math.PI * 2 / count) * i;
+      const angle = ((Math.PI * 2) / count) * i;
       const sx = x + Math.cos(angle) * dist;
       const sy = y + Math.sin(angle) * dist;
-      const clearPos = this._findClearPosition(sx, sy, triangleDef.radius * 0.75, 0, 0, active);
+      const clearPos = this._findClearPosition(
+        sx,
+        sy,
+        triangleDef.radius * 0.75,
+        0,
+        0,
+        active,
+      );
       if (!clearPos) continue;
 
-      this._spawnEnemy(triangleDef, clearPos.x, clearPos.y, levelScale, { sizeFactor: 0.75 });
+      this._spawnEnemy(triangleDef, clearPos.x, clearPos.y, levelScale, {
+        sizeFactor: 0.75,
+      });
     }
   }
 }
