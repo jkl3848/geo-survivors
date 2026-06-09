@@ -1,54 +1,107 @@
 {
   "modifierMode": "multiplicative",
+  "specialInterval": 5,
+  "bossDropPool": [
+    {
+      "id": "overdrive",
+      "name": "Overdrive",
+      "description": "+25% attack and attack speed",
+      "modifiers": { "attack": 0.25, "attackSpeed": 0.25 },
+      "rarity": 6
+    },
+    {
+      "id": "iron_will",
+      "name": "Iron Will",
+      "description": "+30% max HP and defense",
+      "modifiers": { "hp": 0.30, "defense": 0.30 },
+      "rarity": 6
+    },
+    {
+      "id": "scatter_shot",
+      "name": "Scatter Shot",
+      "description": "Fire 3 extra projectiles in a spread",
+      "effect": "scatter_shot",
+      "params": { "count": 3, "spread": 0.35 },
+      "special": true,
+      "rarity": 6
+    }
+  ],
+  "specialPool": [
+    {
+      "id": "rear_shot",
+      "name": "Rear Guard",
+      "description": "Fire an extra projectile behind you",
+      "effect": "rear_shot",
+      "special": true,
+      "rarity": 6
+    },
+    {
+      "id": "retaliation",
+      "name": "Retaliation",
+      "description": "When hit, damage all nearby enemies",
+      "effect": "retaliation",
+      "params": { "radius": 120, "damageMultiplier": 1.0 },
+      "special": true,
+      "rarity": 6
+    },
+    {
+      "id": "orbital_strike",
+      "name": "Orbital Strike",
+      "description": "Fire extra projectiles at 90° angles",
+      "effect": "side_shot",
+      "special": true,
+      "rarity": 6
+    }
+  ],
   "pool": [
     {
       "id": "sharp_edge",
       "name": "Sharp Edge",
       "description": "+15% attack",
       "modifiers": { "attack": 0.15 },
-      "maxStacks": 5
+      "rarity": 1
     },
     {
       "id": "hardened_shell",
       "name": "Hardened Shell",
       "description": "+15% defense",
       "modifiers": { "defense": 0.15 },
-      "maxStacks": 5
+      "rarity": 1
     },
     {
       "id": "thick_hide",
       "name": "Thick Hide",
       "description": "+20% max HP",
       "modifiers": { "hp": 0.20 },
-      "maxStacks": 5
+      "rarity": 2
     },
     {
       "id": "regeneration",
       "name": "Regeneration",
       "description": "+25% health regen",
       "modifiers": { "healthRegen": 0.25 },
-      "maxStacks": 5
+      "rarity": 2
     },
     {
       "id": "swift_steps",
       "name": "Swift Steps",
       "description": "+10% speed",
       "modifiers": { "speed": 0.10 },
-      "maxStacks": 5
+      "rarity": 1
     },
     {
       "id": "rapid_fire",
       "name": "Rapid Fire",
       "description": "+12% attack speed",
       "modifiers": { "attackSpeed": 0.12 },
-      "maxStacks": 5
+      "rarity": 2
     },
     {
       "id": "piercing_shot",
       "name": "Piercing Shot",
       "description": "+1 projectile pierce",
       "modifiers": { "pierce": 1 },
-      "maxStacks": 3,
+      "rarity": 4,
       "modifierMode": "additive"
     },
     {
@@ -56,21 +109,21 @@
       "name": "Big Bullets",
       "description": "+20% projectile size",
       "modifiers": { "projectileRadius": 0.20 },
-      "maxStacks": 4
+      "rarity": 2
     },
     {
       "id": "magnet",
       "name": "XP Magnet",
       "description": "+30% pickup radius",
       "modifiers": { "pickupRadius": 0.30 },
-      "maxStacks": 4
+      "rarity": 3
     },
     {
       "id": "vitality",
       "name": "Vitality",
       "description": "Heal 25% max HP",
       "modifiers": { "healPercent": 0.25 },
-      "maxStacks": 3,
+      "rarity": 3,
       "modifierMode": "instant"
     }
   ]

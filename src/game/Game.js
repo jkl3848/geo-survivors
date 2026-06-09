@@ -52,9 +52,24 @@ export class Game {
 
     this._onResize = () => this._resize();
     this._onCanvasClick = (e) => this._handleCanvasClick(e);
+    this._onPauseKey = (e) => this._handlePauseKey(e);
     this._resize();
     window.addEventListener('resize', this._onResize);
+    window.addEventListener('keydown', this._onPauseKey);
     canvas.addEventListener('click', this._onCanvasClick);
+  }
+
+  _handlePauseKey(e) {
+    if (e.key !== 'Escape') return;
+    if (this.state === 'playing') {
+      this.state = 'paused';
+      this.loop.setPaused(true);
+      e.preventDefault();
+    } else if (this.state === 'paused') {
+      this.state = 'playing';
+      this.loop.setPaused(false);
+      e.preventDefault();
+    }
   }
 
   async start() {
@@ -114,11 +129,11 @@ export class Game {
     const choices = this.levelSystem.upgradeChoices;
     const { width, height } = this.canvas;
     const cardW = 200;
-    const cardH = 120;
+    const cardH = 130;
     const gap = 20;
     const totalW = choices.length * cardW + (choices.length - 1) * gap;
     const startX = (width - totalW) / 2;
-    const cardY = height / 2 - 40;
+    const cardY = height / 2 - 45;
 
     for (let i = 0; i < choices.length; i++) {
       const cx = startX + i * (cardW + gap);
@@ -162,6 +177,10 @@ export class Game {
       return;
     }
 
+    if (this.state === 'paused') {
+      return;
+    }
+
     if (this.input.isKeyDown('m')) {
       if (!this._mutePressed) {
         this.music.toggleMute();
@@ -179,36 +198,20 @@ export class Game {
       return;
     }
 
-    if (this.spawnSystem.isComplete()) {
-      this.state = 'gameover';
-      this._won = true;
-      this.music.stop();
-      this._checkUnlocks();
-      return;
-    }
-
     this.player.update(dt, this.input, this.canvas.width, this.canvas.height);
     this.spawnSystem.update(dt, this.canvas.width, this.canvas.height);
 
     if (this.player.canFire()) {
       const angle = this.input.getAimAngle(this.player.x, this.player.y);
-      const proj = this.projectilePool.acquire();
-      proj.init(
-        this.player.x,
-        this.player.y,
-        angle,
-        this.configs.stats.player.projectileSpeed,
-        this.combatSystem.calcPlayerDamage(this.player.getStat('attack')),
-        this.player.projectileRadius,
-        this.player.pierce,
-      );
+      this._firePlayerProjectiles(angle);
       this.player.resetFireCooldown();
     }
 
     const enemies = this.enemyPool.getActive();
+    const updateContext = { spawnSystem: this.spawnSystem };
     for (const enemy of enemies) {
       if (enemy.active) {
-        enemy.update(dt, this.player.x, this.player.y, this.canvas.width, this.canvas.height);
+        enemy.update(dt, this.player.x, this.player.y, this.canvas.width, this.canvas.height, updateContext);
       }
     }
 
@@ -223,20 +226,15 @@ export class Game {
     }
 
     this.collisionSystem.rebuild(enemies, xpOrbs);
+    this.collisionSystem.resolveEnemyOverlaps(enemies);
+    this.collisionSystem.rebuild(enemies, xpOrbs);
 
     for (const proj of projectiles) {
       if (!proj.active) continue;
       const hit = this.collisionSystem.checkProjectileHits(proj, enemies);
       if (hit) {
         proj.hitIds.add(hit);
-        const killed = hit.takeDamage(proj.damage);
-        if (killed) {
-          this.music.playSfx('G4', 0.05, 'triangle');
-          hit.reset();
-          this.enemyPool.release(hit);
-          const orb = this.xpPool.acquire();
-          orb.init(hit.x, hit.y, hit.xpValue);
-        }
+        this._damageEnemy(hit, proj.damage);
         if (proj.pierceLeft > 0) {
           proj.pierceLeft--;
         } else {
@@ -254,6 +252,7 @@ export class Game {
           totalDmg += this.combatSystem.calcEnemyDamage(enemy.attack, this.player.getStat('defense'));
         }
         this.player.takeDamage(totalDmg);
+        this._triggerRetaliation(totalDmg);
         this.player.contactCooldown = this.configs.stats.player.contactCooldown;
       }
     }
@@ -271,6 +270,133 @@ export class Game {
     }
 
     this._cleanupPools();
+
+    if (this.spawnSystem.isTimerComplete() && !this._hasActiveBoss(this.spawnSystem.getFinalBossId())) {
+      this.state = 'gameover';
+      this._won = true;
+      this.music.stop();
+      this._checkUnlocks();
+    }
+  }
+
+  _hasActiveBoss(typeId) {
+    for (const enemy of this.enemyPool.getActive()) {
+      if (enemy.active && enemy.isBoss && enemy.typeId === typeId) return true;
+    }
+    return false;
+  }
+
+  _getActiveBoss() {
+    for (const enemy of this.enemyPool.getActive()) {
+      if (enemy.active && enemy.isBoss) return enemy;
+    }
+    return null;
+  }
+
+  _firePlayerProjectiles(angle) {
+    const angles = [angle];
+
+    if (this.player.hasSpecial('rear_shot')) {
+      const stacks = this.player.getSpecial('rear_shot').stacks;
+      for (let i = 0; i < stacks; i++) {
+        angles.push(angle + Math.PI);
+      }
+    }
+
+    if (this.player.hasSpecial('side_shot')) {
+      const stacks = this.player.getSpecial('side_shot').stacks;
+      for (let i = 0; i < stacks; i++) {
+        angles.push(angle + Math.PI / 2, angle - Math.PI / 2);
+      }
+    }
+
+    if (this.player.hasSpecial('scatter_shot')) {
+      const spec = this.player.getSpecial('scatter_shot');
+      const count = spec.count || 3;
+      const spread = spec.spread || 0.35;
+      for (let i = 0; i < count * spec.stacks; i++) {
+        const offset = spread * (i - (count - 1) / 2);
+        angles.push(angle + offset);
+      }
+    }
+
+    const damage = this.combatSystem.calcPlayerDamage(this.player.getStat('attack'));
+    const speed = this.configs.stats.player.projectileSpeed;
+
+    for (const fireAngle of angles) {
+      const proj = this.projectilePool.acquire();
+      proj.init(
+        this.player.x,
+        this.player.y,
+        fireAngle,
+        speed,
+        damage,
+        this.player.projectileRadius,
+        this.player.pierce,
+      );
+    }
+  }
+
+  _onEnemyDeath(enemy) {
+    const deathX = enemy.x;
+    const deathY = enemy.y;
+    const deathXp = enemy.xpValue;
+    const wasHexagon = enemy.typeId === 'hexagon';
+    const wasBossSquare = enemy.typeId === 'boss_square';
+    const wasFinalBoss = enemy.typeId === this.spawnSystem.getFinalBossId();
+
+    this.music.playSfx(wasFinalBoss ? 'C4' : 'G4', wasFinalBoss ? 0.2 : 0.05, 'triangle');
+    enemy.reset();
+    this.enemyPool.release(enemy);
+
+    if (wasHexagon) {
+      this.spawnSystem.spawnTriangleBurst(deathX, deathY);
+    }
+
+    if (wasBossSquare) {
+      this.levelSystem.rollBossDropUpgrades();
+      this.state = 'upgrade';
+      this.loop.setPaused(true);
+    }
+
+    const orbCount = wasFinalBoss ? 5 : (wasBossSquare ? 3 : 1);
+    for (let i = 0; i < orbCount; i++) {
+      const angle = (Math.PI * 2 / orbCount) * i;
+      const offset = orbCount > 1 ? 20 : 0;
+      const orb = this.xpPool.acquire();
+      orb.init(
+        deathX + Math.cos(angle) * offset,
+        deathY + Math.sin(angle) * offset,
+        Math.floor(deathXp / orbCount),
+      );
+    }
+  }
+
+  _damageEnemy(enemy, damage) {
+    const killed = enemy.takeDamage(damage);
+    if (killed) {
+      this._onEnemyDeath(enemy);
+    }
+    return killed;
+  }
+
+  _triggerRetaliation(damageTaken) {
+    const spec = this.player.getSpecial('retaliation');
+    if (!spec || damageTaken <= 0) return;
+
+    const radius = spec.radius || 120;
+    const radiusSq = radius * radius;
+    const damage = damageTaken * (spec.damageMultiplier || 1) * spec.stacks;
+    const enemies = this.enemyPool.getActive();
+
+    for (const enemy of enemies) {
+      if (!enemy.active) continue;
+      const dx = enemy.x - this.player.x;
+      const dy = enemy.y - this.player.y;
+      if (dx * dx + dy * dy <= radiusSq) {
+        this._damageEnemy(enemy, damage);
+      }
+    }
   }
 
   _cleanupPools() {
@@ -305,10 +431,27 @@ export class Game {
       this.spawnSystem.getTimeRemaining(),
       this.spawnSystem.getEnemyLevel(),
       this.levelSystem,
+      this.spawnSystem.isTimerComplete(),
     );
 
+    const activeBoss = this._getActiveBoss();
+    if (activeBoss) {
+      this.renderer.drawBossHealthBar(activeBoss, width);
+    }
+
     if (this.state === 'upgrade') {
-      this.renderer.drawUpgradeOverlay(this.levelSystem.upgradeChoices, width, height);
+      this.renderer.drawUpgradeOverlay(
+        this.levelSystem.upgradeChoices,
+        width,
+        height,
+        this.levelSystem.playerStacks,
+        this.levelSystem.isSpecialRoll,
+        this.levelSystem.isBossDrop,
+      );
+    }
+
+    if (this.state === 'paused') {
+      this.renderer.drawPauseOverlay(this.player, this.levelSystem, width, height);
     }
 
     if (this.state === 'gameover') {
@@ -336,6 +479,7 @@ export class Game {
     this.input.destroy();
     this.music.destroy();
     window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('keydown', this._onPauseKey);
     this.canvas.removeEventListener('click', this._onCanvasClick);
   }
 }

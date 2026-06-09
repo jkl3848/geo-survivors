@@ -2,13 +2,16 @@ export class Input {
   constructor(canvas) {
     this.canvas = canvas;
     this.keys = new Set();
+    this.justPressed = new Set();
     this.mouseX = 0;
     this.mouseY = 0;
     this.mouseDown = false;
 
     this._onKeyDown = (e) => {
-      this.keys.add(e.key.toLowerCase());
-      if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(e.key.toLowerCase())) {
+      const key = e.key.toLowerCase();
+      this.keys.add(key);
+      this.justPressed.add(key);
+      if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' ', 'escape'].includes(key)) {
         e.preventDefault();
       }
     };
@@ -52,6 +55,15 @@ export class Input {
 
   isKeyDown(key) {
     return this.keys.has(key.toLowerCase());
+  }
+
+  wasPressed(key) {
+    const k = key.toLowerCase();
+    if (this.justPressed.has(k)) {
+      this.justPressed.delete(k);
+      return true;
+    }
+    return false;
   }
 
   destroy() {

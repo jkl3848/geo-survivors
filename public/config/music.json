@@ -72,6 +72,128 @@
         { "pitch": "G4", "duration": 0.25, "wave": "square" },
         { "pitch": "C5", "duration": 1.0, "wave": "square" }
       ]
+    },
+    {
+      "name": "boss",
+      "loop": true,
+      "notes": [
+        { "pitch": "A3", "duration": 0.125, "wave": "square" },
+        { "pitch": "E4", "duration": 0.125, "wave": "square" },
+        { "pitch": "A4", "duration": 0.125, "wave": "square" },
+        { "pitch": "E4", "duration": 0.125, "wave": "square" },
+    
+        { "pitch": "G4", "duration": 0.125, "wave": "square" },
+        { "pitch": "E4", "duration": 0.125, "wave": "square" },
+        { "pitch": "D4", "duration": 0.125, "wave": "square" },
+        { "pitch": "E4", "duration": 0.125, "wave": "square" },
+    
+        { "pitch": "A3", "duration": 0.125, "wave": "square" },
+        { "pitch": "E4", "duration": 0.125, "wave": "square" },
+        { "pitch": "A4", "duration": 0.125, "wave": "square" },
+        { "pitch": "C5", "duration": 0.125, "wave": "square" },
+    
+        { "pitch": "B4", "duration": 0.125, "wave": "square" },
+        { "pitch": "A4", "duration": 0.125, "wave": "square" },
+        { "pitch": "G4", "duration": 0.125, "wave": "square" },
+        { "pitch": "E4", "duration": 0.125, "wave": "square" },
+    
+        { "pitch": "F4", "duration": 0.125, "wave": "triangle" },
+        { "pitch": "A4", "duration": 0.125, "wave": "triangle" },
+        { "pitch": "C5", "duration": 0.125, "wave": "triangle" },
+        { "pitch": "A4", "duration": 0.125, "wave": "triangle" },
+    
+        { "pitch": "E4", "duration": 0.125, "wave": "triangle" },
+        { "pitch": "G4", "duration": 0.125, "wave": "triangle" },
+        { "pitch": "B4", "duration": 0.125, "wave": "triangle" },
+        { "pitch": "G4", "duration": 0.125, "wave": "triangle" },
+    
+        { "pitch": "D4", "duration": 0.125, "wave": "square" },
+        { "pitch": "A4", "duration": 0.125, "wave": "square" },
+        { "pitch": "D5", "duration": 0.125, "wave": "square" },
+        { "pitch": "A4", "duration": 0.125, "wave": "square" },
+    
+        { "pitch": "C5", "duration": 0.125, "wave": "square" },
+        { "pitch": "A4", "duration": 0.125, "wave": "square" },
+        { "pitch": "G4", "duration": 0.125, "wave": "square" },
+        { "pitch": "E4", "duration": 0.125, "wave": "square" },
+    
+        { "pitch": "A4", "duration": 0.25, "wave": "square" },
+        { "pitch": "C5", "duration": 0.25, "wave": "square" },
+        { "pitch": "E5", "duration": 0.25, "wave": "square" },
+        { "pitch": "G5", "duration": 0.25, "wave": "square" },
+    
+        { "pitch": "F5", "duration": 0.125, "wave": "triangle" },
+        { "pitch": "E5", "duration": 0.125, "wave": "triangle" },
+        { "pitch": "D5", "duration": 0.125, "wave": "triangle" },
+        { "pitch": "C5", "duration": 0.125, "wave": "triangle" },
+    
+        { "pitch": "B4", "duration": 0.125, "wave": "triangle" },
+        { "pitch": "A4", "duration": 0.125, "wave": "triangle" },
+        { "pitch": "G4", "duration": 0.125, "wave": "triangle" },
+        { "pitch": "E4", "duration": 0.125, "wave": "triangle" },
+    
+        { "pitch": "A3", "duration": 0.25, "wave": "square" },
+        { "pitch": "E4", "duration": 0.25, "wave": "square" },
+        { "pitch": "A4", "duration": 0.25, "wave": "square" },
+        { "pitch": "E5", "duration": 0.25, "wave": "square" },
+    
+        { "pitch": "D5", "duration": 0.25, "wave": "square" },
+        { "pitch": "C5", "duration": 0.25, "wave": "square" },
+        { "pitch": "B4", "duration": 0.25, "wave": "square" },
+        { "pitch": "A4", "duration": 0.5, "wave": "square" }
+      ]
+    },
+    {
+      "name": "menu",
+      "loop": true,
+      "notes": [
+        { "pitch": "C4", "duration": 0.5, "wave": "triangle" },
+        { "pitch": "E4", "duration": 0.5, "wave": "triangle" },
+        { "pitch": "G4", "duration": 0.5, "wave": "triangle" },
+        { "pitch": "E4", "duration": 0.5, "wave": "triangle" },
+    
+        { "pitch": "D4", "duration": 0.5, "wave": "triangle" },
+        { "pitch": "F4", "duration": 0.5, "wave": "triangle" },
+        { "pitch": "A4", "duration": 0.5, "wave": "triangle" },
+        { "pitch": "F4", "duration": 0.5, "wave": "triangle" },
+    
+        { "pitch": "E4", "duration": 0.25, "wave": "square" },
+        { "pitch": "G4", "duration": 0.25, "wave": "square" },
+        { "pitch": "B4", "duration": 0.5, "wave": "square" },
+        { "pitch": "G4", "duration": 0.5, "wave": "square" },
+        { "pitch": "E4", "duration": 0.5, "wave": "square" },
+    
+        { "pitch": "C4", "duration": 0.25, "wave": "square" },
+        { "pitch": "D4", "duration": 0.25, "wave": "square" },
+        { "pitch": "E4", "duration": 0.25, "wave": "square" },
+        { "pitch": "G4", "duration": 0.25, "wave": "square" },
+        { "pitch": "C5", "duration": 1.0, "wave": "square" },
+    
+        { "pitch": "A4", "duration": 0.5, "wave": "triangle" },
+        { "pitch": "G4", "duration": 0.5, "wave": "triangle" },
+        { "pitch": "E4", "duration": 0.5, "wave": "triangle" },
+        { "pitch": "C4", "duration": 0.5, "wave": "triangle" },
+    
+        { "pitch": "D4", "duration": 0.25, "wave": "triangle" },
+        { "pitch": "F4", "duration": 0.25, "wave": "triangle" },
+        { "pitch": "A4", "duration": 0.25, "wave": "triangle" },
+        { "pitch": "C5", "duration": 0.25, "wave": "triangle" },
+    
+        { "pitch": "B4", "duration": 0.5, "wave": "square" },
+        { "pitch": "G4", "duration": 0.5, "wave": "square" },
+        { "pitch": "E4", "duration": 0.5, "wave": "square" },
+        { "pitch": "D4", "duration": 0.5, "wave": "square" },
+    
+        { "pitch": "C4", "duration": 0.25, "wave": "triangle" },
+        { "pitch": "E4", "duration": 0.25, "wave": "triangle" },
+        { "pitch": "G4", "duration": 0.25, "wave": "triangle" },
+        { "pitch": "C5", "duration": 0.25, "wave": "triangle" },
+    
+        { "pitch": "G4", "duration": 0.5, "wave": "triangle" },
+        { "pitch": "E4", "duration": 0.5, "wave": "triangle" },
+        { "pitch": "D4", "duration": 0.5, "wave": "triangle" },
+        { "pitch": "C4", "duration": 1.0, "wave": "triangle" }
+      ]
     }
   ]
 }

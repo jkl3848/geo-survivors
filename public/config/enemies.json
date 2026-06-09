@@ -5,7 +5,7 @@
     "outline": "#1a5276",
     "radius": 12,
     "behavior": "chase",
-    "xpValue": 5,
+    "xpValue": 7,
     "baseStats": {
       "hp": 50,
       "attack": 5,
@@ -33,12 +33,58 @@
     "outline": "#922b21",
     "radius": 10,
     "behavior": "chase",
-    "xpValue": 7,
+    "xpValue": 5,
     "baseStats": {
       "hp": 30,
       "attack": 10,
       "defense": 2,
       "speed": 90
+    }
+  },
+  "hexagon": {
+    "id": "hexagon",
+    "color": "#9b59b6",
+    "outline": "#6c3483",
+    "radius": 14,
+    "behavior": "chase",
+    "minEnemyLevel": 3,
+    "xpValue": 12,
+    "baseStats": {
+      "hp": 80,
+      "attack": 8,
+      "defense": 4,
+      "speed": 50
+    }
+  },
+  "boss_square": {
+    "id": "boss_square",
+    "color": "#1abc9c",
+    "outline": "#0e6655",
+    "radius": 38,
+    "behavior": "boss_square",
+    "isBoss": true,
+    "xpValue": 80,
+    "baseStats": {
+      "hp": 800,
+      "attack": 15,
+      "defense": 8,
+      "speed": 28
+    }
+  },
+  "boss_octagon": {
+    "id": "boss_octagon",
+    "color": "#c0392b",
+    "outline": "#7b241c",
+    "radius": 42,
+    "behavior": "boss_octagon",
+    "shape": "octagon",
+    "isBoss": true,
+    "xpValue": 150,
+    "baseStats": {
+      "hp": 500,
+      "attack": 50,
+      "defense": 8,
+      "speed": 80
     }
   }
 }

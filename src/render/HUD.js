@@ -5,7 +5,7 @@ export class HUD {
     this.barHeight = 48;
   }
 
-  draw(player, timeRemaining, enemyLevel, levelSystem) {
+  draw(player, timeRemaining, enemyLevel, levelSystem, timerComplete = false) {
     const ctx = this.ctx;
     const w = this.width;
 
@@ -30,12 +30,16 @@ export class HUD {
     ctx.font = '11px Courier New';
     ctx.fillText(`HP ${Math.ceil(player.hp)}/${Math.ceil(player.maxHp)}`, hpX, hpY + hpBarH + 12);
 
-    const mins = Math.floor(timeRemaining / 60);
-    const secs = Math.floor(timeRemaining % 60);
     ctx.font = 'bold 16px Courier New';
-    ctx.fillStyle = '#5dade2';
+    ctx.fillStyle = timerComplete ? '#e74c3c' : '#5dade2';
     ctx.textAlign = 'center';
-    ctx.fillText(`${mins}:${secs.toString().padStart(2, '0')}`, w / 2, 22);
+    if (timerComplete) {
+      ctx.fillText('FINAL BOSS', w / 2, 22);
+    } else {
+      const mins = Math.floor(timeRemaining / 60);
+      const secs = Math.floor(timeRemaining % 60);
+      ctx.fillText(`${mins}:${secs.toString().padStart(2, '0')}`, w / 2, 22);
+    }
 
     ctx.font = '11px Courier New';
     ctx.fillStyle = '#888';

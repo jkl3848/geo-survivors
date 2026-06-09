@@ -14,6 +14,7 @@ export class Player {
     this.contactCooldown = 0;
     this.fireCooldown = 0;
     this.upgradeStacks = {};
+    this.specialAbilities = {};
     this.pixelArt = null;
     this.bodyBounds = null;
     this.color = '#5dade2';
@@ -50,14 +51,24 @@ export class Player {
     this.contactCooldown = 0;
     this.fireCooldown = 0;
     this.upgradeStacks = {};
+    this.specialAbilities = {};
     this.alive = true;
   }
 
-  getStat(name) {
-    return this.stats[name] ?? 0;
+  hasSpecial(effect) {
+    return (this.specialAbilities[effect]?.stacks || 0) > 0;
+  }
+
+  getSpecial(effect) {
+    return this.specialAbilities[effect] || null;
   }
 
   applyUpgrade(upgrade, modifierMode) {
+    if (upgrade.effect) {
+      this._applySpecialUpgrade(upgrade);
+      return;
+    }
+
     const stacks = (this.upgradeStacks[upgrade.id] || 0) + 1;
     this.upgradeStacks[upgrade.id] = stacks;
 
@@ -89,6 +100,21 @@ export class Player {
         }
       }
     }
+  }
+
+  _applySpecialUpgrade(upgrade) {
+    const stacks = (this.upgradeStacks[upgrade.id] || 0) + 1;
+    this.upgradeStacks[upgrade.id] = stacks;
+
+    const effect = upgrade.effect;
+    if (!this.specialAbilities[effect]) {
+      this.specialAbilities[effect] = { stacks: 0, ...(upgrade.params || {}) };
+    }
+    this.specialAbilities[effect].stacks = stacks;
+  }
+
+  getStat(name) {
+    return this.stats[name] ?? 0;
   }
 
   takeDamage(amount) {

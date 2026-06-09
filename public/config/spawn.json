@@ -10,9 +10,14 @@
     "statScalePerLevel": 0.08
   },
   "enemyWeights": {
-    "circle": 0.4,
-    "square": 0.35,
-    "triangle": 0.25
+    "circle": 0.35,
+    "square": 0.30,
+    "triangle": 0.25,
+    "hexagon": 0.10
   },
-  "spawnPadding": 20
+  "spawnPadding": 20,
+  "bossSchedule": [
+    { "atSeconds": 30, "typeId": "boss_square" }
+  ],
+  "finalBossId": "boss_octagon"
 }

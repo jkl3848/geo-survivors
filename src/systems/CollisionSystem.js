@@ -51,6 +51,42 @@ export class CollisionSystem {
     return hits;
   }
 
+  resolveEnemyOverlaps(enemies, passes = 2) {
+    for (let pass = 0; pass < passes; pass++) {
+      for (let i = 0; i < enemies.length; i++) {
+        const enemy = enemies[i];
+        if (!enemy.active || enemy.isBoss || enemy.launched) continue;
+
+        const nearby = this.hash.queryRadius(enemy.x, enemy.y, enemy.radius * 2.5);
+        for (const other of nearby) {
+          if (!other.active || other === enemy || other.isBoss || other.launched) continue;
+
+          const dx = enemy.x - other.x;
+          const dy = enemy.y - other.y;
+          let distSq = dx * dx + dy * dy;
+          const minDist = enemy.radius + other.radius;
+
+          if (distSq === 0) {
+            enemy.x += (Math.random() - 0.5) * 2;
+            enemy.y += (Math.random() - 0.5) * 2;
+            continue;
+          }
+
+          if (distSq >= minDist * minDist) continue;
+
+          const dist = Math.sqrt(distSq);
+          const overlap = (minDist - dist) * 0.5;
+          const nx = dx / dist;
+          const ny = dy / dist;
+          enemy.x += nx * overlap;
+          enemy.y += ny * overlap;
+          other.x -= nx * overlap;
+          other.y -= ny * overlap;
+        }
+      }
+    }
+  }
+
   checkXPickups(player, xpOrbs) {
     const collected = [];
     const nearby = this.hash.queryRadius(player.x, player.y, player.pickupRadius);
