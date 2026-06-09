@@ -285,7 +285,7 @@ export class Game {
     const collected = this.collisionSystem.checkXPickups(this.player, xpOrbs);
     for (const orb of collected) {
       const leveled = this.levelSystem.addXP(
-        orb.value * this.player.getStat("xpGain"),
+        Math.round(orb.value * this.player.getStat("xpGain")),
       );
       orb.reset();
       this.xpPool.release(orb);

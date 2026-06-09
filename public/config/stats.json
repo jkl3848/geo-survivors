@@ -5,7 +5,8 @@
     "hp": 100,
     "healthRegen": 0.5,
     "speed": 220,
-    "attackSpeed": 1.5
+    "attackSpeed": 1.5,
+    "xpGain": 1
   },
   "shapeWeights": {
     "area": {
@@ -14,12 +15,12 @@
       "defense": 0.15
     },
     "roundness": {
-      "hp": 0.40,
-      "healthRegen": 0.50
+      "hp": 0.4,
+      "healthRegen": 0.5
     },
     "pointiness": {
       "attack": 0.45,
-      "attackSpeed": 0.20
+      "attackSpeed": 0.2
     }
   },
   "limits": {
