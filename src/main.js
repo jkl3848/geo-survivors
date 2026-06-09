@@ -1,5 +1,6 @@
 import { CharacterEditor } from './editor/CharacterEditor.js';
 import { Game } from './game/Game.js';
+import { MusicPlayer } from './audio/MusicPlayer.js';
 
 async function loadConfigs() {
   const [stats, enemies, upgrades, spawn, music, colors] = await Promise.all([
@@ -20,10 +21,12 @@ class App {
     this.editor = null;
     this.game = null;
     this.canvas = null;
+    this.music = new MusicPlayer();
   }
 
   async init() {
     this.configs = await loadConfigs();
+    await this.music.init(this.configs.music);
     this.showEditor();
   }
 
@@ -34,6 +37,15 @@ class App {
     this.editor = new CharacterEditor(this.app, this.configs.stats, this.configs.colors, (characterData) => {
       this.startGame(characterData);
     });
+    this._unlockMenuMusic();
+  }
+
+  _unlockMenuMusic() {
+    const unlock = () => {
+      this.music.unlock().then(() => this.music.playTrack('menu'));
+      this.app.removeEventListener('pointerdown', unlock);
+    };
+    this.app.addEventListener('pointerdown', unlock);
   }
 
   async startGame(characterData) {
@@ -47,9 +59,9 @@ class App {
 
     this.game = new Game(this.canvas, this.configs, characterData, () => {
       this.showEditor();
-    });
+    }, this.music);
 
-    await this.game.music.resume();
+    await this.music.unlock();
     await this.game.start();
   }
 

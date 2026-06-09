@@ -12,11 +12,10 @@ import { CollisionSystem } from '../systems/CollisionSystem.js';
 import { LevelSystem } from '../systems/LevelSystem.js';
 import { Renderer } from '../render/Renderer.js';
 import { HUD } from '../render/HUD.js';
-import { MusicPlayer } from '../audio/MusicPlayer.js';
 import { ColorUnlocks } from '../editor/ColorUnlocks.js';
 
 export class Game {
-  constructor(canvas, configs, characterData, onReturnToEditor) {
+  constructor(canvas, configs, characterData, onReturnToEditor, music) {
     this.canvas = canvas;
     this.configs = configs;
     this.characterData = characterData;
@@ -46,7 +45,7 @@ export class Game {
 
     this.renderer = null;
     this.hud = null;
-    this.music = new MusicPlayer();
+    this.music = music;
     this.colorUnlocks = configs.colors ? new ColorUnlocks(configs.colors) : null;
     this.newUnlocks = [];
 
@@ -95,8 +94,7 @@ export class Game {
     this.renderer = new Renderer(this.ctx, width, height);
     this.hud = new HUD(this.ctx, width);
 
-    await this.music.init(this.configs.music);
-    this.music.play();
+    this.music.playTrack('main');
 
     this.state = 'playing';
     this.loop.setPaused(false);
@@ -200,6 +198,11 @@ export class Game {
 
     this.player.update(dt, this.input, this.canvas.width, this.canvas.height);
     this.spawnSystem.update(dt, this.canvas.width, this.canvas.height);
+
+    const wantedTrack = this._getActiveBoss() ? 'boss' : 'main';
+    if (this.music.currentTrackName !== wantedTrack) {
+      this.music.playTrack(wantedTrack);
+    }
 
     if (this.player.canFire()) {
       const angle = this.input.getAimAngle(this.player.x, this.player.y);
@@ -477,7 +480,7 @@ export class Game {
   destroy() {
     this.loop.stop();
     this.input.destroy();
-    this.music.destroy();
+    this.music.stop();
     window.removeEventListener('resize', this._onResize);
     window.removeEventListener('keydown', this._onPauseKey);
     this.canvas.removeEventListener('click', this._onCanvasClick);

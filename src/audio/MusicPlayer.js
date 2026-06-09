@@ -8,17 +8,26 @@ export class MusicPlayer {
     this._timer = null;
     this._noteIndex = 0;
     this._track = null;
+    this._tracks = {};
+    this.currentTrackName = '';
     this._bpm = 140;
   }
 
   async init(musicConfig) {
     this._bpm = musicConfig.bpm || 140;
-    this._track = musicConfig.tracks[0];
-    this.ctx = new AudioContext();
+    this._tracks = {};
+    for (const track of musicConfig.tracks) {
+      this._tracks[track.name] = track;
+    }
+    this._track = this._tracks.main || musicConfig.tracks[0];
+    this.currentTrackName = this._track?.name || '';
   }
 
-  async resume() {
-    if (this.ctx && this.ctx.state === 'suspended') {
+  async unlock() {
+    if (!this.ctx) {
+      this.ctx = new AudioContext();
+    }
+    if (this.ctx.state === 'suspended') {
       await this.ctx.resume();
     }
   }
@@ -28,6 +37,16 @@ export class MusicPlayer {
     this.playing = true;
     this._noteIndex = 0;
     this._scheduleNext();
+  }
+
+  playTrack(name) {
+    const track = this._tracks[name];
+    if (!track || !this.ctx) return;
+    if (this.currentTrackName === name && this.playing) return;
+    this.stop();
+    this._track = track;
+    this.currentTrackName = name;
+    this.play();
   }
 
   stop() {
