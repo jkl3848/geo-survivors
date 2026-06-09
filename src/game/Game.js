@@ -1,18 +1,18 @@
-import { ObjectPool } from '../core/ObjectPool.js';
-import { SpatialHash } from '../core/SpatialHash.js';
-import { GameLoop } from './GameLoop.js';
-import { Input } from './Input.js';
-import { Player } from '../entities/Player.js';
-import { Enemy } from '../entities/Enemy.js';
-import { Projectile } from '../entities/Projectile.js';
-import { XPOrb } from '../entities/XPOrb.js';
-import { SpawnSystem } from '../systems/SpawnSystem.js';
-import { CombatSystem } from '../systems/CombatSystem.js';
-import { CollisionSystem } from '../systems/CollisionSystem.js';
-import { LevelSystem } from '../systems/LevelSystem.js';
-import { Renderer } from '../render/Renderer.js';
-import { HUD } from '../render/HUD.js';
-import { ColorUnlocks } from '../editor/ColorUnlocks.js';
+import { ObjectPool } from "../core/ObjectPool.js";
+import { SpatialHash } from "../core/SpatialHash.js";
+import { GameLoop } from "./GameLoop.js";
+import { Input } from "./Input.js";
+import { Player } from "../entities/Player.js";
+import { Enemy } from "../entities/Enemy.js";
+import { Projectile } from "../entities/Projectile.js";
+import { XPOrb } from "../entities/XPOrb.js";
+import { SpawnSystem } from "../systems/SpawnSystem.js";
+import { CombatSystem } from "../systems/CombatSystem.js";
+import { CollisionSystem } from "../systems/CollisionSystem.js";
+import { LevelSystem } from "../systems/LevelSystem.js";
+import { Renderer } from "../render/Renderer.js";
+import { HUD } from "../render/HUD.js";
+import { ColorUnlocks } from "../editor/ColorUnlocks.js";
 
 export class Game {
   constructor(canvas, configs, characterData, onReturnToEditor, music) {
@@ -21,24 +21,31 @@ export class Game {
     this.characterData = characterData;
     this.onReturnToEditor = onReturnToEditor;
 
-    this.ctx = canvas.getContext('2d');
+    this.ctx = canvas.getContext("2d");
     this.ctx.imageSmoothingEnabled = false;
 
-    this.state = 'playing';
+    this.state = "playing";
     this._won = false;
     this._mutePressed = false;
-    this.debug = new URLSearchParams(window.location.search).has('debug');
+    this.debug = new URLSearchParams(window.location.search).has("debug");
 
     this.player = new Player();
     this.input = new Input(canvas);
-    this.loop = new GameLoop((dt) => this.update(dt), () => this.render());
+    this.loop = new GameLoop(
+      (dt) => this.update(dt),
+      () => this.render(),
+    );
 
     this.enemyPool = new ObjectPool(() => new Enemy(), 64);
     this.projectilePool = new ObjectPool(() => new Projectile(), 32);
     this.xpPool = new ObjectPool(() => new XPOrb(), 64);
 
     this.spatialHash = new SpatialHash(32);
-    this.spawnSystem = new SpawnSystem(configs.spawn, configs.enemies, this.enemyPool);
+    this.spawnSystem = new SpawnSystem(
+      configs.spawn,
+      configs.enemies,
+      this.enemyPool,
+    );
     this.combatSystem = new CombatSystem(configs.stats);
     this.collisionSystem = new CollisionSystem(this.spatialHash);
     this.levelSystem = new LevelSystem(configs.stats.xp, configs.upgrades);
@@ -46,26 +53,28 @@ export class Game {
     this.renderer = null;
     this.hud = null;
     this.music = music;
-    this.colorUnlocks = configs.colors ? new ColorUnlocks(configs.colors) : null;
+    this.colorUnlocks = configs.colors
+      ? new ColorUnlocks(configs.colors)
+      : null;
     this.newUnlocks = [];
 
     this._onResize = () => this._resize();
     this._onCanvasClick = (e) => this._handleCanvasClick(e);
     this._onPauseKey = (e) => this._handlePauseKey(e);
     this._resize();
-    window.addEventListener('resize', this._onResize);
-    window.addEventListener('keydown', this._onPauseKey);
-    canvas.addEventListener('click', this._onCanvasClick);
+    window.addEventListener("resize", this._onResize);
+    window.addEventListener("keydown", this._onPauseKey);
+    canvas.addEventListener("click", this._onCanvasClick);
   }
 
   _handlePauseKey(e) {
-    if (e.key !== 'Escape') return;
-    if (this.state === 'playing') {
-      this.state = 'paused';
+    if (e.key !== "Escape") return;
+    if (this.state === "playing") {
+      this.state = "paused";
       this.loop.setPaused(true);
       e.preventDefault();
-    } else if (this.state === 'paused') {
-      this.state = 'playing';
+    } else if (this.state === "paused") {
+      this.state = "playing";
       this.loop.setPaused(false);
       e.preventDefault();
     }
@@ -94,22 +103,22 @@ export class Game {
     this.renderer = new Renderer(this.ctx, width, height);
     this.hud = new HUD(this.ctx, width);
 
-    this.music.playTrack('main');
+    this.music.playTrack("main");
 
-    this.state = 'playing';
+    this.state = "playing";
     this.loop.setPaused(false);
     this.loop.start();
   }
 
   _pickUpgrade(index) {
     this.levelSystem.applyUpgrade(index, this.player);
-    this.state = 'playing';
+    this.state = "playing";
     this.loop.setPaused(false);
-    this.music.playSfx('C5', 0.15);
+    this.music.playSfx("C5", 0.15);
   }
 
   _handleCanvasClick(e) {
-    if (this.state !== 'upgrade') return;
+    if (this.state !== "upgrade") return;
 
     const rect = this.canvas.getBoundingClientRect();
     const scaleX = this.canvas.width / rect.width;
@@ -152,7 +161,7 @@ export class Game {
   }
 
   _resize() {
-    const app = document.getElementById('app');
+    const app = document.getElementById("app");
     this.canvas.width = app.clientWidth;
     this.canvas.height = app.clientHeight;
     if (this.renderer) {
@@ -163,23 +172,23 @@ export class Game {
   }
 
   update(dt) {
-    if (this.state === 'gameover') {
-      if (this.input.isKeyDown('r')) {
+    if (this.state === "gameover") {
+      if (this.input.isKeyDown("r")) {
         this.destroy();
         this.onReturnToEditor();
       }
       return;
     }
 
-    if (this.state === 'upgrade') {
+    if (this.state === "upgrade") {
       return;
     }
 
-    if (this.state === 'paused') {
+    if (this.state === "paused") {
       return;
     }
 
-    if (this.input.isKeyDown('m')) {
+    if (this.input.isKeyDown("m")) {
       if (!this._mutePressed) {
         this.music.toggleMute();
         this._mutePressed = true;
@@ -189,7 +198,7 @@ export class Game {
     }
 
     if (!this.player.alive) {
-      this.state = 'gameover';
+      this.state = "gameover";
       this._won = false;
       this.music.stop();
       this._checkUnlocks();
@@ -199,7 +208,7 @@ export class Game {
     this.player.update(dt, this.input, this.canvas.width, this.canvas.height);
     this.spawnSystem.update(dt, this.canvas.width, this.canvas.height);
 
-    const wantedTrack = this._getActiveBoss() ? 'boss' : 'main';
+    const wantedTrack = this._getActiveBoss() ? "boss" : "main";
     if (this.music.currentTrackName !== wantedTrack) {
       this.music.playTrack(wantedTrack);
     }
@@ -214,7 +223,14 @@ export class Game {
     const updateContext = { spawnSystem: this.spawnSystem };
     for (const enemy of enemies) {
       if (enemy.active) {
-        enemy.update(dt, this.player.x, this.player.y, this.canvas.width, this.canvas.height, updateContext);
+        enemy.update(
+          dt,
+          this.player.x,
+          this.player.y,
+          this.canvas.width,
+          this.canvas.height,
+          updateContext,
+        );
       }
     }
 
@@ -248,11 +264,17 @@ export class Game {
     }
 
     if (this.player.contactCooldown <= 0) {
-      const touching = this.collisionSystem.checkPlayerEnemyCollisions(this.player, enemies);
+      const touching = this.collisionSystem.checkPlayerEnemyCollisions(
+        this.player,
+        enemies,
+      );
       if (touching.length > 0) {
         let totalDmg = 0;
         for (const enemy of touching) {
-          totalDmg += this.combatSystem.calcEnemyDamage(enemy.attack, this.player.getStat('defense'));
+          totalDmg += this.combatSystem.calcEnemyDamage(
+            enemy.attack,
+            this.player.getStat("defense"),
+          );
         }
         this.player.takeDamage(totalDmg);
         this._triggerRetaliation(totalDmg);
@@ -262,20 +284,25 @@ export class Game {
 
     const collected = this.collisionSystem.checkXPickups(this.player, xpOrbs);
     for (const orb of collected) {
-      const leveled = this.levelSystem.addXP(orb.value);
+      const leveled = this.levelSystem.addXP(
+        orb.value * this.player.getStat("xpGain"),
+      );
       orb.reset();
       this.xpPool.release(orb);
       if (leveled) {
-        this.state = 'upgrade';
+        this.state = "upgrade";
         this.loop.setPaused(true);
-        this.music.playSfx('C5', 0.2);
+        this.music.playSfx("C5", 0.2);
       }
     }
 
     this._cleanupPools();
 
-    if (this.spawnSystem.isTimerComplete() && !this._hasActiveBoss(this.spawnSystem.getFinalBossId())) {
-      this.state = 'gameover';
+    if (
+      this.spawnSystem.isTimerComplete() &&
+      !this._hasActiveBoss(this.spawnSystem.getFinalBossId())
+    ) {
+      this.state = "gameover";
       this._won = true;
       this.music.stop();
       this._checkUnlocks();
@@ -299,22 +326,22 @@ export class Game {
   _firePlayerProjectiles(angle) {
     const angles = [angle];
 
-    if (this.player.hasSpecial('rear_shot')) {
-      const stacks = this.player.getSpecial('rear_shot').stacks;
+    if (this.player.hasSpecial("rear_shot")) {
+      const stacks = this.player.getSpecial("rear_shot").stacks;
       for (let i = 0; i < stacks; i++) {
         angles.push(angle + Math.PI);
       }
     }
 
-    if (this.player.hasSpecial('side_shot')) {
-      const stacks = this.player.getSpecial('side_shot').stacks;
+    if (this.player.hasSpecial("side_shot")) {
+      const stacks = this.player.getSpecial("side_shot").stacks;
       for (let i = 0; i < stacks; i++) {
         angles.push(angle + Math.PI / 2, angle - Math.PI / 2);
       }
     }
 
-    if (this.player.hasSpecial('scatter_shot')) {
-      const spec = this.player.getSpecial('scatter_shot');
+    if (this.player.hasSpecial("scatter_shot")) {
+      const spec = this.player.getSpecial("scatter_shot");
       const count = spec.count || 3;
       const spread = spec.spread || 0.35;
       for (let i = 0; i < count * spec.stacks; i++) {
@@ -323,7 +350,9 @@ export class Game {
       }
     }
 
-    const damage = this.combatSystem.calcPlayerDamage(this.player.getStat('attack'));
+    const damage = this.combatSystem.calcPlayerDamage(
+      this.player.getStat("attack"),
+    );
     const speed = this.configs.stats.player.projectileSpeed;
 
     for (const fireAngle of angles) {
@@ -344,11 +373,15 @@ export class Game {
     const deathX = enemy.x;
     const deathY = enemy.y;
     const deathXp = enemy.xpValue;
-    const wasHexagon = enemy.typeId === 'hexagon';
-    const wasBossSquare = enemy.typeId === 'boss_square';
+    const wasHexagon = enemy.typeId === "hexagon";
+    const wasBossSquare = enemy.typeId === "boss_square";
     const wasFinalBoss = enemy.typeId === this.spawnSystem.getFinalBossId();
 
-    this.music.playSfx(wasFinalBoss ? 'C4' : 'G4', wasFinalBoss ? 0.2 : 0.05, 'triangle');
+    this.music.playSfx(
+      wasFinalBoss ? "C4" : "G4",
+      wasFinalBoss ? 0.2 : 0.05,
+      "triangle",
+    );
     enemy.reset();
     this.enemyPool.release(enemy);
 
@@ -358,13 +391,13 @@ export class Game {
 
     if (wasBossSquare) {
       this.levelSystem.rollBossDropUpgrades();
-      this.state = 'upgrade';
+      this.state = "upgrade";
       this.loop.setPaused(true);
     }
 
-    const orbCount = wasFinalBoss ? 5 : (wasBossSquare ? 3 : 1);
+    const orbCount = wasFinalBoss ? 5 : wasBossSquare ? 3 : 1;
     for (let i = 0; i < orbCount; i++) {
-      const angle = (Math.PI * 2 / orbCount) * i;
+      const angle = ((Math.PI * 2) / orbCount) * i;
       const offset = orbCount > 1 ? 20 : 0;
       const orb = this.xpPool.acquire();
       orb.init(
@@ -384,7 +417,7 @@ export class Game {
   }
 
   _triggerRetaliation(damageTaken) {
-    const spec = this.player.getSpecial('retaliation');
+    const spec = this.player.getSpecial("retaliation");
     if (!spec || damageTaken <= 0) return;
 
     const radius = spec.radius || 120;
@@ -442,7 +475,7 @@ export class Game {
       this.renderer.drawBossHealthBar(activeBoss, width);
     }
 
-    if (this.state === 'upgrade') {
+    if (this.state === "upgrade") {
       this.renderer.drawUpgradeOverlay(
         this.levelSystem.upgradeChoices,
         width,
@@ -453,11 +486,16 @@ export class Game {
       );
     }
 
-    if (this.state === 'paused') {
-      this.renderer.drawPauseOverlay(this.player, this.levelSystem, width, height);
+    if (this.state === "paused") {
+      this.renderer.drawPauseOverlay(
+        this.player,
+        this.levelSystem,
+        width,
+        height,
+      );
     }
 
-    if (this.state === 'gameover') {
+    if (this.state === "gameover") {
       this.renderer.drawGameOver(
         this._won,
         this.spawnSystem.elapsed,
@@ -481,8 +519,8 @@ export class Game {
     this.loop.stop();
     this.input.destroy();
     this.music.stop();
-    window.removeEventListener('resize', this._onResize);
-    window.removeEventListener('keydown', this._onPauseKey);
-    this.canvas.removeEventListener('click', this._onCanvasClick);
+    window.removeEventListener("resize", this._onResize);
+    window.removeEventListener("keydown", this._onPauseKey);
+    this.canvas.removeEventListener("click", this._onCanvasClick);
   }
 }
