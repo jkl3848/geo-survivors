@@ -4,8 +4,8 @@
     "defense": 5,
     "hp": 100,
     "healthRegen": 0.5,
-    "speed": 180,
-    "attackSpeed": 1.2
+    "speed": 220,
+    "attackSpeed": 1.5
   },
   "shapeWeights": {
     "area": {

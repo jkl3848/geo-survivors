@@ -17,7 +17,7 @@
   },
   "spawnPadding": 20,
   "bossSchedule": [
-    { "atSeconds": 30, "typeId": "boss_square" }
+    { "atSeconds": 300, "typeId": "boss_square" }
   ],
   "finalBossId": "boss_octagon"
 }
