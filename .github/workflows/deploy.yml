@@ -9,11 +9,19 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout geo-survivors
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -22,41 +30,19 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Build geo-survivors
+      - name: Build
         run: |
           npm ci
-          BASE_PATH=/geo-survivors/ npm run build
+          npm run build
 
-      - name: Checkout js-rpg-game
-        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          repository: jkl3848/js-rpg-game
-          token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
-          path: js-rpg-game
-
-      - name: Build js-rpg-game
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: yarn
-          cache-dependency-path: js-rpg-game/yarn.lock
-
-      - name: Build RPG site
-        working-directory: js-rpg-game
-        run: |
-          yarn install --frozen-lockfile
-          yarn build
-
-      - name: Combine site output
-        run: |
-          mkdir -p js-rpg-game/dist/geo-survivors
-          cp -r dist/. js-rpg-game/dist/geo-survivors/
-          cp js-rpg-game/CNAME js-rpg-game/dist/CNAME
+          path: dist
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          personal_token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
-          external_repository: jkl3848/js-rpg-game
-          publish_dir: ./js-rpg-game/dist
-          publish_branch: gh-pages
+        id: deployment
+        uses: actions/deploy-pages@v4
