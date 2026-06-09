@@ -17,8 +17,8 @@
       "rarity": 6
     },
     {
-      "id": "scatter_shot",
-      "name": "Scatter Shot",
+      "id": "ultra_scatter_shot",
+      "name": "Ultra Scatter",
       "description": "Fire 3 extra projectiles in a spread",
       "effect": "scatter_shot",
       "params": { "count": 3, "spread": 0.35 },
@@ -71,16 +71,16 @@
     {
       "id": "thick_hide",
       "name": "Thick Hide",
-      "description": "+20% max HP",
-      "modifiers": { "hp": 0.20 },
-      "rarity": 2
+      "description": "+10% max HP",
+      "modifiers": { "hp": 0.10 },
+      "rarity": 1
     },
     {
-      "id": "regeneration",
-      "name": "Regeneration",
-      "description": "+25% health regen",
-      "modifiers": { "healthRegen": 0.25 },
-      "rarity": 2
+      "id": "iron_skin",
+      "name": "Iron Skin",
+      "description": "+25% max HP",
+      "modifiers": { "hp": 0.25 },
+      "rarity": 3
     },
     {
       "id": "swift_steps",
@@ -105,6 +105,14 @@
       "modifierMode": "additive"
     },
     {
+      "id": "sniper_shot",
+      "name": "Sniper Shot",
+      "description": "+2 projectile pierce",
+      "modifiers": { "pierce": 2 },
+      "rarity": 5,
+      "modifierMode": "additive"
+    },
+    {
       "id": "big_bullets",
       "name": "Big Bullets",
       "description": "+20% projectile size",
@@ -112,19 +120,69 @@
       "rarity": 2
     },
     {
+      "id": "bowling_balls",
+      "name": "Bowling Balls",
+      "description": "+35% projectile size",
+      "modifiers": { "projectileRadius": 0.35 },
+      "rarity": 4
+    },
+    {
       "id": "magnet",
       "name": "XP Magnet",
-      "description": "+30% pickup radius",
-      "modifiers": { "pickupRadius": 0.30 },
+      "description": "+10% pickup radius",
+      "modifiers": { "pickupRadius": 0.10 },
       "rarity": 3
     },
     {
-      "id": "vitality",
-      "name": "Vitality",
+      "id": "xp_vacuum",
+      "name": "XP Vacuum",
+      "description": "30% pickup radius",
+      "modifiers": { "pickupRadius": 0.30 },
+      "rarity": 5
+    },
+    {
+      "id": "resolve",
+      "name": "Resolve",
       "description": "Heal 25% max HP",
       "modifiers": { "healPercent": 0.25 },
       "rarity": 3,
       "modifierMode": "instant"
+    },
+    {
+      "id": "scatter_shot",
+      "name": "Scatter Shot",
+      "description": "Fire 1 extra projectiles in a spread",
+      "effect": "scatter_shot",
+      "params": { "count": 1, "spread": 0.4 },
+      "special": true,
+      "rarity": 4
+    },{
+      "id": "sleek_shot",
+      "name": "Sleek Shot",
+      "description": "+10% projectile speed",
+      "modifiers": { "projectileSpeed": 0.10 },
+      "rarity": 1
+    },
+    {
+      "id": "speed_shot",
+      "name": "Speed Shot",
+      "description": "+20% projectile speed",
+      "modifiers": { "projectileSpeed": 0.20 },
+      "rarity": 4
+    },
+    {
+      "id": "tiny_bullets",
+      "name": "Tiny Bullets",
+      "description": "+15% projectile speed, -10% projectile size",
+      "modifiers": { "projectileSpeed": 0.20, "projectileRadius": -0.10 },
+      "rarity": 3
+    },
+    {
+      "id": "nimble",
+      "name": "Nimble",
+      "description": "+15% speed, -10% max HP",
+      "modifiers": { "speed": 0.15, "hp": -0.10 },
+      "rarity": 3
     }
   ]
 }
