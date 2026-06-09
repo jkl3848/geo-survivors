@@ -5,12 +5,12 @@
     "outline": "#1a5276",
     "radius": 12,
     "behavior": "chase",
-    "xpValue": 10,
+    "xpValue": 6,
     "baseStats": {
       "hp": 50,
       "attack": 5,
       "defense": 3,
-      "speed": 72
+      "speed": 82
     }
   },
   "square": {
@@ -24,7 +24,7 @@
       "hp": 40,
       "attack": 6,
       "defense": 8,
-      "speed": 66
+      "speed": 78
     }
   },
   "triangle": {
@@ -48,12 +48,12 @@
     "radius": 14,
     "behavior": "chase",
     "minEnemyLevel": 3,
-    "xpValue": 14,
+    "xpValue": 8,
     "baseStats": {
       "hp": 80,
       "attack": 6,
       "defense": 4,
-      "speed": 45
+      "speed": 60
     }
   },
   "boss_square": {
