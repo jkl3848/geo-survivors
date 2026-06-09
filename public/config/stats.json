@@ -1,6 +1,6 @@
 {
   "baseStats": {
-    "attack": 10,
+    "attack": 15,
     "defense": 5,
     "hp": 100,
     "healthRegen": 0.5,
