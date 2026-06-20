@@ -1,4 +1,4 @@
-import { wrapPosition } from '../core/Vec2.js';
+import { wrapPosition } from "../core/Vec2.js";
 
 export class Player {
   constructor() {
@@ -17,7 +17,7 @@ export class Player {
     this.specialAbilities = {};
     this.pixelArt = null;
     this.bodyBounds = null;
-    this.color = '#5dade2';
+    this.color = "#5dade2";
     this.displayWidth = 16;
     this.displayHeight = 16;
     this.hitFlash = 0;
@@ -25,7 +25,7 @@ export class Player {
     this.alive = true;
   }
 
-  init(x, y, baseStats, pixelArt, bodyBounds, playerConfig, color = '#5dade2') {
+  init(x, y, baseStats, pixelArt, bodyBounds, playerConfig, color = "#5dade2") {
     this.x = x;
     this.y = y;
     this.stats = { ...baseStats };
@@ -72,31 +72,35 @@ export class Player {
     const stacks = (this.upgradeStacks[upgrade.id] || 0) + 1;
     this.upgradeStacks[upgrade.id] = stacks;
 
-    if (modifierMode === 'instant' || upgrade.modifierMode === 'instant') {
+    if (modifierMode === "instant" || upgrade.modifierMode === "instant") {
       if (upgrade.modifiers.healPercent) {
-        this.hp = Math.min(this.maxHp, this.hp + this.maxHp * upgrade.modifiers.healPercent);
+        this.hp = Math.min(
+          this.maxHp,
+          this.hp + this.maxHp * upgrade.modifiers.healPercent,
+        );
       }
       return;
     }
 
     const mode = upgrade.modifierMode || modifierMode;
     for (const [key, value] of Object.entries(upgrade.modifiers)) {
-      if (key === 'pickupRadius') {
-        this.pickupRadius *= (1 + value);
-      } else if (key === 'projectileRadius') {
-        this.projectileRadius *= (1 + value);
-      } else if (key === 'pierce') {
+      if (key === "pickupRadius") {
+        this.pickupRadius *= 1 + value;
+      } else if (key === "projectileRadius") {
+        this.projectileRadius *= 1 + value;
+      } else if (key === "pierce") {
         this.pierce += value;
-      } else if (key === 'hp') {
+      } else if (key === "hp") {
         const oldMax = this.maxHp;
-        this.stats.hp = (this.stats.hp || 0) * (mode === 'additive' ? 1 + value : 1 + value);
+        this.stats.hp =
+          (this.stats.hp || 0) * (mode === "additive" ? 1 + value : 1 + value);
         this.maxHp = this.stats.hp;
         this.hp += this.maxHp - oldMax;
       } else if (this.stats[key] !== undefined) {
-        if (mode === 'additive') {
+        if (mode === "additive") {
           this.stats[key] += value;
         } else {
-          this.stats[key] *= (1 + value);
+          this.stats[key] *= 1 + value;
         }
       }
     }
@@ -131,12 +135,12 @@ export class Player {
     if (!this.alive) return;
 
     const move = input.getMovement();
-    const speed = this.getStat('speed');
+    const speed = this.getStat("speed");
     this.x += move.x * speed * dt;
     this.y += move.y * speed * dt;
     wrapPosition(this, worldW, worldH);
 
-    const regen = this.getStat('healthRegen');
+    const regen = this.getStat("healthRegen");
     if (regen > 0 && this.hp < this.maxHp) {
       this.hp = Math.min(this.maxHp, this.hp + regen * dt);
     }
@@ -159,7 +163,7 @@ export class Player {
   }
 
   resetFireCooldown() {
-    const rate = this.getStat('attackSpeed');
+    const rate = this.getStat("attackSpeed");
     this.fireCooldown = rate > 0 ? 1 / rate : 1;
   }
 }
