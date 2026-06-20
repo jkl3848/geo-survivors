@@ -33,6 +33,12 @@ export class SpawnSystem {
     return this.enemyLevel;
   }
 
+  setEnemyLevel(levelOneIndexed) {
+    const level = Math.max(1, Math.floor(levelOneIndexed));
+    this.enemyLevel = level - 1;
+    this.elapsed = this.enemyLevel * this.config.enemyLevel.everySeconds;
+  }
+
   getTimeRemaining() {
     if (this.timerComplete) return 0;
     return Math.max(0, this.config.durationSeconds - this.elapsed);
@@ -108,9 +114,6 @@ export class SpawnSystem {
 
     this.spawnTimer -= dt;
     while (this.spawnTimer <= 0) {
-      console.log(
-        `Spawning enemy at ${this.elapsed.toFixed(2)}s (level ${this.enemyLevel})`,
-      );
       this.spawnTimer += interval;
       this._trySpawn(worldW, worldH);
     }

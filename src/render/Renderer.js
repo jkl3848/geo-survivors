@@ -117,6 +117,33 @@ export class Renderer {
     }
   }
 
+  _wrapTextLines(text, maxWidth) {
+    const words = String(text).split(' ');
+    const lines = [];
+    let line = '';
+
+    for (const word of words) {
+      const testLine = line ? `${line} ${word}` : word;
+      if (this.ctx.measureText(testLine).width > maxWidth && line) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = testLine;
+      }
+    }
+
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  _drawWrappedText(text, x, y, maxWidth, lineHeight) {
+    const lines = this._wrapTextLines(text, maxWidth);
+    for (let i = 0; i < lines.length; i++) {
+      this.ctx.fillText(lines[i], x, y + i * lineHeight);
+    }
+    return lines.length;
+  }
+
   _drawShape(x, y, radius, shape, color, outline, rotation = 0) {
     const cx = Math.round(x);
     const cy = Math.round(y);
@@ -193,19 +220,24 @@ export class Renderer {
       this.ctx.lineWidth = 3;
       this.ctx.strokeRect(cx, cardY, cardW, cardH);
 
+      const textPad = 12;
+      const textMaxW = cardW - textPad * 2;
+      const centerX = cx + cardW / 2;
+
       this.ctx.fillStyle = style.text;
       this.ctx.font = 'bold 14px Courier New';
-      this.ctx.fillText(choice.name, cx + cardW / 2, cardY + 28);
+      const nameLines = this._drawWrappedText(choice.name, centerX, cardY + 22, textMaxW, 16);
       this.ctx.font = '10px Courier New';
       this.ctx.fillStyle = style.border;
-      this.ctx.fillText(style.label, cx + cardW / 2, cardY + 44);
+      this.ctx.fillText(style.label, centerX, cardY + 22 + nameLines * 16 + 8);
       this.ctx.font = '12px Courier New';
       this.ctx.fillStyle = '#ccc';
-      this.ctx.fillText(choice.description, cx + cardW / 2, cardY + 68);
+      const descY = cardY + 22 + nameLines * 16 + 24;
+      const descLines = this._drawWrappedText(choice.description, centerX, descY, textMaxW, 14);
       if (stacks > 0) {
         this.ctx.fillStyle = style.border;
         this.ctx.font = 'bold 11px Courier New';
-        this.ctx.fillText(`Owned: x${stacks}`, cx + cardW / 2, cardY + 100);
+        this.ctx.fillText(`Owned: x${stacks}`, centerX, descY + descLines * 14 + 8);
       }
     });
 
@@ -275,9 +307,9 @@ export class Renderer {
         ctx.fillText(`${upgrade.name} x${stacks}`, rightX, y);
         ctx.fillStyle = '#666';
         ctx.font = '10px Courier New';
-        ctx.fillText(upgrade.description, rightX, y + 14);
+        const descLines = this._drawWrappedText(upgrade.description, rightX, y + 14, colW, 12);
         ctx.font = '12px Courier New';
-        y += 32;
+        y += 14 + descLines * 12 + 10;
       }
     }
 
@@ -318,9 +350,15 @@ export class Renderer {
     this.ctx.textAlign = 'left';
   }
 
-  drawDebug(fps, enemyCount, width) {
+  drawDebug(fps, enemyCount, height) {
     this.ctx.fillStyle = '#0f0';
     this.ctx.font = '12px Courier New';
     this.ctx.fillText(`FPS: ${fps}  Enemies: ${enemyCount}`, 10, height - 10);
+  }
+
+  drawDevHint(height) {
+    this.ctx.fillStyle = '#5dade2';
+    this.ctx.font = '12px Courier New';
+    this.ctx.fillText('DEV: press ` to open panel', 10, height - 10);
   }
 }

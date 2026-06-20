@@ -13,6 +13,7 @@ import { LevelSystem } from "../systems/LevelSystem.js";
 import { Renderer } from "../render/Renderer.js";
 import { HUD } from "../render/HUD.js";
 import { ColorUnlocks } from "../editor/ColorUnlocks.js";
+import { DevPanel } from "../dev/DevPanel.js";
 
 export class Game {
   constructor(canvas, configs, characterData, onReturnToEditor, music) {
@@ -27,7 +28,9 @@ export class Game {
     this.state = "playing";
     this._won = false;
     this._mutePressed = false;
-    this.debug = new URLSearchParams(window.location.search).has("debug");
+    const params = new URLSearchParams(window.location.search);
+    this.debug = params.has("debug");
+    this.devMode = params.has("dev");
 
     this.player = new Player();
     this.input = new Input(canvas);
@@ -57,6 +60,7 @@ export class Game {
       ? new ColorUnlocks(configs.colors)
       : null;
     this.newUnlocks = [];
+    this.devPanel = null;
 
     this._onResize = () => this._resize();
     this._onCanvasClick = (e) => this._handleCanvasClick(e);
@@ -68,7 +72,25 @@ export class Game {
   }
 
   _handlePauseKey(e) {
+    if (this.devMode && e.key === "`") {
+      if (this.state === "playing" || this.state === "paused") {
+        this._toggleDevPanel();
+        e.preventDefault();
+      } else if (this.state === "dev") {
+        this._closeDevPanel();
+        e.preventDefault();
+      }
+      return;
+    }
+
     if (e.key !== "Escape") return;
+
+    if (this.state === "dev") {
+      this._closeDevPanel();
+      e.preventDefault();
+      return;
+    }
+
     if (this.state === "playing") {
       this.state = "paused";
       this.loop.setPaused(true);
@@ -78,6 +100,28 @@ export class Game {
       this.loop.setPaused(false);
       e.preventDefault();
     }
+  }
+
+  _toggleDevPanel() {
+    if (this.state === "dev") {
+      this._closeDevPanel();
+    } else {
+      this._openDevPanel();
+    }
+  }
+
+  _openDevPanel() {
+    if (!this.devPanel) return;
+    this.state = "dev";
+    this.loop.setPaused(true);
+    this.devPanel.show();
+  }
+
+  _closeDevPanel() {
+    if (!this.devPanel) return;
+    this.devPanel.hide();
+    this.state = "playing";
+    this.loop.setPaused(false);
   }
 
   async start() {
@@ -102,6 +146,44 @@ export class Game {
 
     this.renderer = new Renderer(this.ctx, width, height);
     this.hud = new HUD(this.ctx, width);
+
+    if (this.devMode) {
+      const app = document.getElementById("app");
+      this.devPanel = new DevPanel({
+        container: app,
+        getState: () => ({
+          upgrades: this.levelSystem.getAllUpgrades(),
+          playerStacks: this.levelSystem.playerStacks,
+          enemyLevel: this.spawnSystem.getEnemyLevel() + 1,
+          elapsed: this.spawnSystem.elapsed,
+        }),
+        actions: {
+          applyUpgrade: (id) =>
+            this.levelSystem.applyUpgradeById(id, this.player),
+          setEnemyLevel: (level) => this.spawnSystem.setEnemyLevel(level),
+          spawnBoss: (typeId) =>
+            this.spawnSystem.spawnBoss(typeId, width, height),
+          forceLevelUp: () => {
+            const leveled = this.levelSystem.forceLevelUp();
+            if (leveled) {
+              this._closeDevPanel();
+              this.state = "upgrade";
+              this.loop.setPaused(true);
+              this.music.playSfx("C5", 0.2);
+            }
+          },
+          healFull: () => {
+            this.player.hp = this.player.maxHp;
+          },
+          killAllEnemies: () => {
+            for (const enemy of [...this.enemyPool.getActive()]) {
+              if (enemy.active) this._onEnemyDeath(enemy);
+            }
+          },
+        },
+      });
+      window.__game = this;
+    }
 
     this.music.playTrack("main");
 
@@ -181,6 +263,10 @@ export class Game {
     }
 
     if (this.state === "upgrade") {
+      return;
+    }
+
+    if (this.state === "dev") {
       return;
     }
 
@@ -513,12 +599,23 @@ export class Game {
       }
       this.renderer.drawDebug(this.loop.fps, activeEnemies, height);
     }
+
+    if (this.devMode && this.state !== "dev") {
+      this.renderer.drawDevHint(height);
+    }
   }
 
   destroy() {
     this.loop.stop();
     this.input.destroy();
     this.music.stop();
+    if (this.devPanel) {
+      this.devPanel.destroy();
+      this.devPanel = null;
+    }
+    if (window.__game === this) {
+      delete window.__game;
+    }
     window.removeEventListener("resize", this._onResize);
     window.removeEventListener("keydown", this._onPauseKey);
     this.canvas.removeEventListener("click", this._onCanvasClick);

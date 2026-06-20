@@ -134,12 +134,37 @@ export class LevelSystem {
     const upgrade = this.upgradeChoices[choiceIndex];
     if (!upgrade) return;
 
-    this.playerStacks[upgrade.id] = (this.playerStacks[upgrade.id] || 0) + 1;
-    player.applyUpgrade(upgrade, this.upgradesConfig.modifierMode);
+    this._grantUpgrade(upgrade, player);
     this.pendingUpgrade = false;
     this.isSpecialRoll = false;
     this.isBossDrop = false;
     this.upgradeChoices = [];
+  }
+
+  getAllUpgrades() {
+    return this._allUpgradePools();
+  }
+
+  applyUpgradeById(id, player) {
+    const upgrade = this._allUpgradePools().find((u) => u.id === id);
+    if (!upgrade) return false;
+    if (
+      upgrade.maxStacks != null &&
+      (this.playerStacks[id] || 0) >= upgrade.maxStacks
+    ) {
+      return false;
+    }
+    this._grantUpgrade(upgrade, player);
+    return true;
+  }
+
+  forceLevelUp() {
+    return this.addXP(this.xpToNext - this.xp);
+  }
+
+  _grantUpgrade(upgrade, player) {
+    this.playerStacks[upgrade.id] = (this.playerStacks[upgrade.id] || 0) + 1;
+    player.applyUpgrade(upgrade, this.upgradesConfig.modifierMode);
   }
 
   getProgress() {
