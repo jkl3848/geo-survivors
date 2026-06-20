@@ -1,3 +1,5 @@
+import { getRarityWeight } from "../config/upgradeRarity.js";
+
 export class LevelSystem {
   constructor(xpConfig, upgradesConfig) {
     this.xpConfig = xpConfig;
@@ -74,6 +76,23 @@ export class LevelSystem {
     this.rollUpgradesFromPool(pool);
   }
 
+  _pickWeightedUpgrade(candidates) {
+    if (candidates.length === 0) return null;
+
+    let total = 0;
+    for (const upgrade of candidates) {
+      total += getRarityWeight(upgrade.rarity);
+    }
+
+    let roll = Math.random() * total;
+    for (const upgrade of candidates) {
+      roll -= getRarityWeight(upgrade.rarity);
+      if (roll <= 0) return upgrade;
+    }
+
+    return candidates[candidates.length - 1];
+  }
+
   rollUpgradesFromPool(pool) {
     const available = pool.filter((u) => {
       if (u.maxStacks == null) return true;
@@ -85,11 +104,11 @@ export class LevelSystem {
     const count = Math.min(3, available.length);
 
     while (choices.length < count) {
-      const pick = available[Math.floor(Math.random() * available.length)];
-      if (!used.has(pick.id)) {
-        used.add(pick.id);
-        choices.push(pick);
-      }
+      const candidates = available.filter((u) => !used.has(u.id));
+      const pick = this._pickWeightedUpgrade(candidates);
+      if (!pick) break;
+      used.add(pick.id);
+      choices.push(pick);
     }
 
     this.upgradeChoices = choices;
