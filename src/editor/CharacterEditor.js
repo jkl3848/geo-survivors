@@ -4,28 +4,42 @@ import {
   processShape,
   applyColorTraits,
 } from './ShapeAnalyzer.js';
-import { ColorUnlocks } from './ColorUnlocks.js';
+import { MetaMenu } from '../meta/MetaMenu.js';
 
 const GRID_SIZE = 128;
 const DISPLAY_SCALE = 3;
 const BRUSH_RADIUS = 1;
 
 export class CharacterEditor {
-  constructor(container, statsConfig, colorsConfig, onPlay) {
+  constructor(container, statsConfig, colorsConfig, meta, upgradesConfig, onPlay) {
     this.statsConfig = statsConfig;
     this.onPlay = onPlay;
-    this.colorUnlocks = new ColorUnlocks(colorsConfig);
+    this.meta = meta;
+    this.upgradesConfig = upgradesConfig;
     this.colors = colorsConfig.colors;
-    this.selectedColor = this.colors.find((c) => this.colorUnlocks.isUnlocked(c.id)) || this.colors[0];
+    this.selectedColor = this.colors.find((c) => this.meta.isColorUnlocked(c.id)) || this.colors[0];
 
     this.grid = new Uint8Array(GRID_SIZE * GRID_SIZE);
+    const savedShape = this.meta.loadShape();
+    if (savedShape?.grid?.length === this.grid.length) {
+      this.grid.set(savedShape.grid);
+    }
+    if (savedShape?.colorId && this.meta.isColorUnlocked(savedShape.colorId)) {
+      this.selectedColor = this.colors.find((color) => color.id === savedShape.colorId) || this.selectedColor;
+    }
+    this.metaMenu = new MetaMenu({
+      meta: this.meta,
+      colors: this.colors,
+      upgrades: this.upgradesConfig,
+      onChange: (reason) => this._onMetaChange(reason),
+    });
     this.drawing = false;
     this.erasing = false;
     this.lastCell = null;
     this._statsDirty = false;
 
     this.root = document.createElement('div');
-    this.root.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px;';
+    this.root.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px;max-height:100%;overflow:auto;';
 
     const title = document.createElement('h1');
     title.textContent = 'GEO SURVIVORS';
@@ -36,6 +50,23 @@ export class CharacterEditor {
     subtitle.textContent = 'Draw your shape — stats depend on your geometry';
     subtitle.style.cssText = 'color:#888;font-size:13px;margin-bottom:8px;';
     this.root.appendChild(subtitle);
+
+    const metaRow = document.createElement('div');
+    metaRow.style.cssText = 'display:flex;gap:12px;align-items:center;';
+    this.shardLabel = document.createElement('span');
+    this.shardLabel.style.cssText = 'color:#f1c40f;font-size:13px;min-width:96px;';
+    metaRow.appendChild(this.shardLabel);
+    const upgradesBtn = this._makeButton('Upgrades', '#1a5276');
+    upgradesBtn.style.padding = '8px 14px';
+    upgradesBtn.style.fontSize = '12px';
+    upgradesBtn.addEventListener('click', () => this.metaMenu.open('shop'));
+    metaRow.appendChild(upgradesBtn);
+    const recordsBtn = this._makeButton('Records', '#1a5276');
+    recordsBtn.style.padding = '8px 14px';
+    recordsBtn.style.fontSize = '12px';
+    recordsBtn.addEventListener('click', () => this.metaMenu.open('records'));
+    metaRow.appendChild(recordsBtn);
+    this.root.appendChild(metaRow);
 
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;gap:24px;align-items:flex-start;';
@@ -64,6 +95,9 @@ export class CharacterEditor {
     this.colorHint.style.cssText = 'color:#888;font-size:10px;margin-top:6px;min-height:28px;';
     colorSection.appendChild(this.colorHint);
     side.appendChild(colorSection);
+
+    this.difficultyRow = document.createElement('div');
+    side.appendChild(this.difficultyRow);
 
     row.appendChild(side);
     this.root.appendChild(row);
@@ -94,8 +128,70 @@ export class CharacterEditor {
 
     this._bindPointerEvents();
     this._buildColorPicker();
+    this._renderDifficulty();
+    this._updateShardLabel();
     this._redraw();
     this._updateStats();
+  }
+
+  _persistShape() {
+    this.meta.saveShape(this.grid, this.selectedColor?.id);
+  }
+
+  _updateShardLabel() {
+    this.shardLabel.textContent = `${this.meta.getShards()} shards`;
+  }
+
+  _onMetaChange(reason) {
+    if (reason === 'reset') {
+      this.grid.fill(0);
+      this.selectedColor = this.colors.find((color) => this.meta.isColorUnlocked(color.id)) || this.colors[0];
+      this.msgEl.textContent = '';
+      this._redraw();
+      this._updateStats();
+    }
+    this._buildColorPicker();
+    this._renderDifficulty();
+    this._updateShardLabel();
+  }
+
+  _renderDifficulty() {
+    this.difficultyRow.innerHTML = '';
+    const unlocked = this.meta.config.difficulties.filter((difficulty) => (
+      this.meta.isDifficultyUnlocked(difficulty.id)
+    ));
+    if (unlocked.length < 2) return;
+
+    this.difficultyRow.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+    const label = document.createElement('p');
+    label.textContent = 'DIFFICULTY';
+    label.style.cssText = 'color:#5dade2;font-weight:bold;margin:0;';
+    this.difficultyRow.appendChild(label);
+
+    const buttons = document.createElement('div');
+    buttons.style.cssText = 'display:flex;gap:6px;';
+    const selected = this.meta.getSelectedDifficulty();
+    for (const difficulty of unlocked) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = difficulty.name;
+      const active = difficulty.id === selected;
+      button.style.cssText = [
+        'padding:6px 10px',
+        'font-family:inherit',
+        'font-size:11px',
+        'cursor:pointer',
+        `border:1px solid ${active ? '#f1c40f' : '#444'}`,
+        `background:${active ? '#3d3208' : '#1a1a2e'}`,
+        `color:${active ? '#f1c40f' : '#ccc'}`,
+      ].join(';');
+      button.addEventListener('click', () => {
+        this.meta.setSelectedDifficulty(difficulty.id);
+        this._renderDifficulty();
+      });
+      buttons.appendChild(button);
+    }
+    this.difficultyRow.appendChild(buttons);
   }
 
   _bindPointerEvents() {
@@ -158,9 +254,9 @@ export class CharacterEditor {
   _buildColorPicker() {
     this.colorGrid.innerHTML = '';
     for (const color of this.colors) {
-      const unlocked = this.colorUnlocks.isUnlocked(color.id);
+      const unlocked = this.meta.isColorUnlocked(color.id);
       const swatch = document.createElement('button');
-      swatch.title = unlocked ? color.name : `${color.name} — ${this.colorUnlocks.getUnlockHint(color)}`;
+      swatch.title = unlocked ? color.name : `${color.name} — ${this.meta.getUnlockHint(color)}`;
       swatch.style.cssText = `
         width:28px;height:28px;border:2px solid ${this.selectedColor?.id === color.id ? '#fff' : '#444'};
         background:${color.hex};cursor:${unlocked ? 'pointer' : 'not-allowed'};
@@ -169,6 +265,7 @@ export class CharacterEditor {
       if (unlocked) {
         swatch.addEventListener('click', () => {
           this.selectedColor = color;
+          this._persistShape();
           this._buildColorPicker();
           this._redraw();
           this._updateStats();
@@ -259,6 +356,7 @@ export class CharacterEditor {
   _finalizeShape() {
     const processed = processShape(this.grid, GRID_SIZE, GRID_SIZE);
     this.grid.set(processed);
+    this._persistShape();
     this._redraw();
     this._updateStats();
   }
@@ -266,6 +364,7 @@ export class CharacterEditor {
   clear() {
     this.grid.fill(0);
     this.msgEl.textContent = '';
+    this._persistShape();
     this._redraw();
     this._updateStats();
   }
@@ -364,10 +463,12 @@ export class CharacterEditor {
       pixelArt,
       color,
       colorId: this.selectedColor?.id,
+      difficulty: this.meta.getSelectedDifficulty(),
     });
   }
 
   destroy() {
+    this.metaMenu.close();
     this.root.remove();
   }
 }

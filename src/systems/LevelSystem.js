@@ -5,9 +5,14 @@ import {
 } from "../config/combatStats.js";
 
 export class LevelSystem {
-  constructor(xpConfig, upgradesConfig) {
+  constructor(xpConfig, upgradesConfig, options = {}) {
     this.xpConfig = xpConfig;
     this.upgradesConfig = upgradesConfig;
+    this.isUpgradeUnlocked = options.isUpgradeUnlocked || (() => true);
+    this.choiceCount = options.choiceCount || 3;
+    this.rerollsPerRun = options.rerollsPerRun || 0;
+    this.skipsPerRun = options.skipsPerRun || 0;
+    this.onUpgradeGranted = options.onUpgradeGranted || null;
     this.level = 1;
     this.xp = 0;
     this.xpToNext = xpConfig.baseToLevel;
@@ -18,6 +23,9 @@ export class LevelSystem {
     this.playerStacks = {};
     this.tagCounts = {};
     this.combatTotals = {};
+    this._activePool = null;
+    this.rerollsLeft = this.rerollsPerRun;
+    this.skipsLeft = this.skipsPerRun;
   }
 
   reset() {
@@ -31,6 +39,9 @@ export class LevelSystem {
     this.playerStacks = {};
     this.tagCounts = {};
     this.combatTotals = {};
+    this._activePool = null;
+    this.rerollsLeft = this.rerollsPerRun;
+    this.skipsLeft = this.skipsPerRun;
   }
 
   _allUpgradePools() {
@@ -63,6 +74,7 @@ export class LevelSystem {
   }
 
   rollUpgrades() {
+    this.isBossDrop = false;
     this.isSpecialRoll = this._isSpecialLevel();
     let pool = this.isSpecialRoll
       ? (this.upgradesConfig.specialPool || [])
@@ -127,7 +139,8 @@ export class LevelSystem {
   }
 
   _eligible(pool) {
-    const underCap = this._uniquePool(pool).filter((upgrade) => {
+    const unlocked = this._uniquePool(pool).filter((upgrade) => this.isUpgradeUnlocked(upgrade));
+    const underCap = unlocked.filter((upgrade) => {
       if (upgrade.maxStacks == null) return true;
       return (this.playerStacks[upgrade.id] || 0) < upgrade.maxStacks;
     });
@@ -164,11 +177,12 @@ export class LevelSystem {
   }
 
   rollUpgradesFromPool(pool) {
+    this._activePool = pool;
     const available = this._eligible(pool);
 
     const choices = [];
     const used = new Set();
-    const count = Math.min(3, available.length);
+    const count = Math.min(this.choiceCount, available.length);
 
     while (choices.length < count) {
       const candidates = available.filter((u) => !used.has(u.id));
@@ -179,6 +193,29 @@ export class LevelSystem {
     }
 
     this.upgradeChoices = choices;
+  }
+
+  reroll() {
+    if (this.rerollsLeft <= 0 || !this._activePool) return false;
+    this.rerollsLeft -= 1;
+    const special = this.isSpecialRoll;
+    const boss = this.isBossDrop;
+    this.rollUpgradesFromPool(this._activePool);
+    this.isSpecialRoll = special;
+    this.isBossDrop = boss;
+    return true;
+  }
+
+  skip(player) {
+    if (this.skipsLeft <= 0 || !player) return false;
+    this.skipsLeft -= 1;
+    player.hp = Math.min(player.maxHp, player.hp + player.maxHp * 0.15);
+    this.pendingUpgrade = false;
+    this.isSpecialRoll = false;
+    this.isBossDrop = false;
+    this.upgradeChoices = [];
+    this._activePool = null;
+    return true;
   }
 
   getEquippedUpgrades() {
@@ -242,6 +279,7 @@ export class LevelSystem {
       }
     }
     player.applyUpgrade(upgrade, this.upgradesConfig.modifierMode);
+    this.onUpgradeGranted?.(upgrade);
   }
 
   grantRandom(tag, count, player) {

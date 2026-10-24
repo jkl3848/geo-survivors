@@ -89,9 +89,11 @@ export class Enemy {
     const bs = typeDef.baseStats;
     const scale = 1 + levelScale;
     const hpScale = sizeFactor * sizeFactor;
-    this.maxHp = (options.hpOverride ?? bs.hp * scale * hpScale);
+    const hpMult = options.hpOverride == null ? (options.hpMult ?? 1) : 1;
+    const attackMult = options.attackMult ?? 1;
+    this.maxHp = (options.hpOverride ?? bs.hp * scale * hpScale * hpMult);
     this.hp = this.maxHp;
-    this.attack = bs.attack * scale;
+    this.attack = bs.attack * scale * attackMult;
     this.defense = bs.defense * scale;
     this.speed = (options.speedOverride ?? bs.speed / sizeFactor);
 

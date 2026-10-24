@@ -74,4 +74,18 @@ export class HUD {
       xpY + xpBarH + 12,
     );
   }
+
+  drawToasts(toasts) {
+    if (!toasts?.length) return;
+    const ctx = this.ctx;
+    ctx.textAlign = "center";
+    ctx.font = "bold 14px Courier New";
+    let toastY = this.barHeight + 22;
+    for (const toast of toasts) {
+      ctx.fillStyle = "#f1c40f";
+      ctx.fillText(toast.text, this.width / 2, toastY);
+      toastY += 18;
+    }
+    ctx.textAlign = "left";
+  }
 }

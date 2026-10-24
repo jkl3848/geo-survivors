@@ -1,10 +1,11 @@
 import { lerp } from "../core/Vec2.js";
 
 export class SpawnSystem {
-  constructor(spawnConfig, enemyDefs, enemyPool) {
+  constructor(spawnConfig, enemyDefs, enemyPool, difficulty = null) {
     this.config = spawnConfig;
     this.enemyDefs = enemyDefs;
     this.enemyPool = enemyPool;
+    this.difficulty = difficulty || { hp: 1, attack: 1, spawnRate: 1 };
     this.spawnTimer = 0;
     this.elapsed = 0;
     this.enemyLevel = 0;
@@ -106,10 +107,10 @@ export class SpawnSystem {
 
     this._checkBossSpawns(worldW, worldH);
 
-    const progress = this.getProgress();
+    const rate = this.difficulty.spawnRate || 1;
     const interval = Math.max(
-      this.config.spawnInterval.start - this.enemyLevel * 0.24,
-      this.config.spawnInterval.end,
+      (this.config.spawnInterval.start - this.enemyLevel * 0.24) / rate,
+      this.config.spawnInterval.end / rate,
     );
 
     this.spawnTimer -= dt;
@@ -182,6 +183,8 @@ export class SpawnSystem {
     enemy.init(typeDef, x, y, levelScale, this.elapsed, {
       enemyLevel: this.enemyLevel,
       isBoss: typeDef.isBoss || options.isBoss,
+      hpMult: this.difficulty.hp ?? 1,
+      attackMult: this.difficulty.attack ?? 1,
       ...options,
     });
     return enemy;

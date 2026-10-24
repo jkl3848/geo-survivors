@@ -16,6 +16,15 @@
       "description": "+30% max HP and defense",
       "modifiers": { "hp": 0.3, "defense": 0.3 },
       "rarity": 6
+    },
+    {
+      "id": "bounty",
+      "name": "Bounty",
+      "description": "+20% max HP, attack, and XP gain",
+      "modifiers": { "hp": 0.2, "attack": 0.2, "xpGain": 0.2 },
+      "rarity": 6,
+      "maxStacks": 1,
+      "unlockedBy": "hard_win"
     }
   ],
   "specialPool": [
@@ -119,6 +128,37 @@
       "tags": ["gunner"],
       "rarity": 6,
       "maxStacks": 2
+    },
+    {
+      "id": "permafrost",
+      "name": "Permafrost",
+      "description": "Hits freeze more often, and slows cut deeper.",
+      "combat": { "freezeChance": 0.12, "freezeDuration": 0.4, "slowAmount": 0.18, "slowChance": 0.1 },
+      "tags": ["frost"],
+      "rarity": 6,
+      "maxStacks": 2,
+      "unlockedBy": "path_focus"
+    },
+    {
+      "id": "inferno",
+      "name": "Inferno",
+      "description": "Burns and blasts deal much more damage.",
+      "combat": { "burnDps": 0.6, "burnChance": 0.1, "explosionDamage": 0.45 },
+      "tags": ["fire"],
+      "rarity": 6,
+      "maxStacks": 2,
+      "unlockedBy": "total_kills_1000"
+    },
+    {
+      "id": "supercell",
+      "name": "Supercell",
+      "description": "Arcs jump farther and strike much harder.",
+      "modifiers": { "attackSpeed": 0.2 },
+      "combat": { "chainJumps": 2, "chainDamage": 0.35, "chainChance": 0.15 },
+      "tags": ["lightning"],
+      "rarity": 6,
+      "maxStacks": 2,
+      "unlockedBy": "win"
     }
   ],
   "pool": [
@@ -541,6 +581,25 @@
       "description": "+25% XP gain",
       "modifiers": { "xpGain": 0.25 },
       "rarity": 5
+    },
+    {
+      "id": "glass_cannon",
+      "name": "Glass Cannon",
+      "description": "+60% attack, -25% max HP",
+      "modifiers": { "attack": 0.6, "hp": -0.25 },
+      "rarity": 5,
+      "maxStacks": 1,
+      "unlockedBy": "boss_square"
+    },
+    {
+      "id": "fan_of_knives",
+      "name": "Fan of Knives",
+      "description": "Fire extra shots forward and to both sides.",
+      "combat": { "forwardShots": 1, "sideShots": 1 },
+      "tags": ["gunner"],
+      "rarity": 5,
+      "maxStacks": 1,
+      "unlockedBy": "reach_level_20"
     }
   ]
 }

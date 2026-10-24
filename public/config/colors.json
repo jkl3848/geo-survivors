@@ -12,7 +12,7 @@
       "name": "Crimson",
       "hex": "#e74c3c",
       "unlockedByDefault": false,
-      "unlockCondition": "survive_3_min",
+      "unlockAchievement": "survive_3_min",
       "traits": { "attack": 0.08 }
     },
     {
@@ -20,7 +20,7 @@
       "name": "Emerald",
       "hex": "#2ecc71",
       "unlockedByDefault": false,
-      "unlockCondition": "survive_5_min",
+      "unlockAchievement": "survive_5_min",
       "traits": { "healthRegen": 0.15 }
     },
     {
@@ -28,15 +28,15 @@
       "name": "Gold",
       "hex": "#f1c40f",
       "unlockedByDefault": false,
-      "unlockCondition": "win",
-      "traits": { "attackSpeed": 0.10, "speed": 0.05 }
+      "unlockAchievement": "win",
+      "traits": { "attackSpeed": 0.1, "speed": 0.05 }
     },
     {
       "id": "violet",
       "name": "Violet",
       "hex": "#9b59b6",
       "unlockedByDefault": false,
-      "unlockCondition": "survive_8_min",
+      "unlockAchievement": "survive_8_min",
       "traits": { "defense": 0.12 }
     },
     {
@@ -44,8 +44,48 @@
       "name": "Obsidian",
       "hex": "#566573",
       "unlockedByDefault": false,
-      "unlockCondition": "reach_level_10",
+      "unlockAchievement": "reach_level_10",
       "traits": { "hp": 0.15, "defense": 0.08 }
+    },
+    {
+      "id": "ivory",
+      "name": "Ivory",
+      "hex": "#f4f6f7",
+      "unlockedByDefault": false,
+      "unlockAchievement": "boss_square",
+      "traits": { "speed": 0.08 }
+    },
+    {
+      "id": "amber",
+      "name": "Amber",
+      "hex": "#e67e22",
+      "unlockedByDefault": false,
+      "unlockAchievement": "reach_level_20",
+      "traits": { "attack": 0.1 }
+    },
+    {
+      "id": "rose",
+      "name": "Rose",
+      "hex": "#e84393",
+      "unlockedByDefault": false,
+      "unlockAchievement": "total_kills_1000",
+      "traits": { "healthRegen": 0.2 }
+    },
+    {
+      "id": "cobalt",
+      "name": "Cobalt",
+      "hex": "#1abc9c",
+      "unlockedByDefault": false,
+      "unlockAchievement": "path_focus",
+      "traits": { "attackSpeed": 0.08 }
+    },
+    {
+      "id": "solar",
+      "name": "Solar",
+      "hex": "#ff7675",
+      "unlockedByDefault": false,
+      "unlockAchievement": "hard_win",
+      "traits": { "attack": 0.06, "defense": 0.06 }
     }
   ]
 }

@@ -1,5 +1,5 @@
 import { getRarityStyle } from '../config/upgradeRarity.js';
-import { getUpgradeCardLayout } from './upgradeLayout.js';
+import { getUpgradeActionLayout, getUpgradeCardLayout } from './upgradeLayout.js';
 
 export class Renderer {
   constructor(ctx, width, height) {
@@ -249,7 +249,7 @@ export class Renderer {
     this.ctx.restore();
   }
 
-  drawUpgradeOverlay(choices, width, height, playerStacks = {}, isSpecialRoll = false, isBossDrop = false, previewFor = null) {
+  drawUpgradeOverlay(choices, width, height, playerStacks = {}, isSpecialRoll = false, isBossDrop = false, previewFor = null, actions = []) {
     this.ctx.fillStyle = 'rgba(0,0,0,0.7)';
     this.ctx.fillRect(0, 0, width, height);
 
@@ -302,9 +302,26 @@ export class Renderer {
       }
     });
 
+    const actionLayout = getUpgradeActionLayout(actions, width, layout);
+    for (const action of actionLayout) {
+      this.ctx.fillStyle = action.enabled ? '#1a5276' : '#222';
+      this.ctx.fillRect(action.x, action.y, action.w, action.h);
+      this.ctx.strokeStyle = action.enabled ? '#5dade2' : '#444';
+      this.ctx.lineWidth = 2;
+      this.ctx.strokeRect(action.x, action.y, action.w, action.h);
+      this.ctx.fillStyle = action.enabled ? '#ecf0f1' : '#666';
+      this.ctx.font = '12px Courier New';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText(action.label, action.x + action.w / 2, action.y + 22);
+    }
+
     this.ctx.fillStyle = '#666';
     this.ctx.font = '12px Courier New';
-    this.ctx.fillText('Click a card to choose', width / 2, cardY + cardH + 30);
+    this.ctx.textAlign = 'center';
+    const hintY = actionLayout.length
+      ? actionLayout[0].y + actionLayout[0].h + 22
+      : cardY + cardH + 30;
+    this.ctx.fillText('Click a card to choose', width / 2, hintY);
     this.ctx.textAlign = 'left';
   }
 
@@ -396,14 +413,21 @@ export class Renderer {
     ctx.textAlign = 'left';
   }
 
-  drawGameOver(won, timeSurvived, level, width, height, newUnlocks = []) {
+  drawGameOver(won, timeSurvived, level, width, height, runResult = null) {
     this.ctx.fillStyle = 'rgba(0,0,0,0.75)';
     this.ctx.fillRect(0, 0, width, height);
 
     this.ctx.textAlign = 'center';
     this.ctx.fillStyle = won ? '#2ecc71' : '#e74c3c';
     this.ctx.font = 'bold 36px Courier New';
-    this.ctx.fillText(won ? 'VICTORY!' : 'GAME OVER', width / 2, height / 2 - 40);
+    const title = won ? 'VICTORY!' : 'GAME OVER';
+    const hard = runResult?.difficultyName === 'Hard';
+    this.ctx.fillText(title, width / 2, height / 2 - 60);
+    if (hard) {
+      this.ctx.fillStyle = '#e67e22';
+      this.ctx.font = '14px Courier New';
+      this.ctx.fillText('HARD', width / 2, height / 2 - 36);
+    }
 
     const mins = Math.floor(timeSurvived / 60);
     const secs = Math.floor(timeSurvived % 60);
@@ -412,17 +436,32 @@ export class Renderer {
     this.ctx.fillText(`Time: ${mins}:${secs.toString().padStart(2, '0')}`, width / 2, height / 2);
     this.ctx.fillText(`Level reached: ${level}`, width / 2, height / 2 + 30);
 
-    let extraY = height / 2 + 70;
-    if (newUnlocks.length > 0) {
+    let extraY = height / 2 + 62;
+    this.ctx.font = '13px Courier New';
+    if (runResult) {
       this.ctx.fillStyle = '#f1c40f';
-      this.ctx.font = '13px Courier New';
-      this.ctx.fillText(`Unlocked: ${newUnlocks.map((c) => c.name).join(', ')}`, width / 2, extraY);
-      extraY += 24;
+      this.ctx.fillText(`+${runResult.shardsEarned} shards`, width / 2, extraY);
+      extraY += 22;
+      const names = (runResult.achievements || []).map((achievement) => achievement.name);
+      if (names.length) {
+        const lines = this._drawWrappedText(`Unlocked: ${names.join(', ')}`, width / 2, extraY, Math.min(520, width - 48), 16);
+        extraY += lines * 16 + 6;
+      }
+      if (runResult.newBestTime) {
+        this.ctx.fillStyle = '#5dade2';
+        this.ctx.fillText('New best time!', width / 2, extraY);
+        extraY += 20;
+      }
+      if (runResult.newBestLevel) {
+        this.ctx.fillStyle = '#5dade2';
+        this.ctx.fillText('New best level!', width / 2, extraY);
+        extraY += 20;
+      }
     }
 
     this.ctx.fillStyle = '#5dade2';
     this.ctx.font = '14px Courier New';
-    this.ctx.fillText('Press R to retry', width / 2, extraY);
+    this.ctx.fillText('Press R to return', width / 2, extraY + 8);
     this.ctx.textAlign = 'left';
   }
 
