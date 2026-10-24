@@ -1,4 +1,5 @@
 import { wrapPosition } from "../core/Vec2.js";
+import { emptyCombat } from "../config/combatStats.js";
 
 export class Player {
   constructor() {
@@ -15,6 +16,7 @@ export class Player {
     this.fireCooldown = 0;
     this.upgradeStacks = {};
     this.specialAbilities = {};
+    this.combat = emptyCombat();
     this.pixelArt = null;
     this.bodyBounds = null;
     this.color = "#5dade2";
@@ -25,7 +27,7 @@ export class Player {
     this.alive = true;
   }
 
-  init(x, y, baseStats, pixelArt, bodyBounds, playerConfig, color = "#5dade2") {
+  init(x, y, baseStats, pixelArt, bodyBounds, playerConfig, color = "#5dade2", combatDefaults = {}) {
     this.x = x;
     this.y = y;
     this.stats = { ...baseStats };
@@ -52,6 +54,7 @@ export class Player {
     this.fireCooldown = 0;
     this.upgradeStacks = {};
     this.specialAbilities = {};
+    this.combat = emptyCombat(combatDefaults);
     this.alive = true;
   }
 
@@ -64,14 +67,19 @@ export class Player {
   }
 
   applyUpgrade(upgrade, modifierMode) {
-    if (upgrade.effect) {
-      this._applySpecialUpgrade(upgrade);
-      return;
-    }
-
     const stacks = (this.upgradeStacks[upgrade.id] || 0) + 1;
     this.upgradeStacks[upgrade.id] = stacks;
 
+    if (upgrade.effect) this._applySpecialUpgrade(upgrade, stacks);
+    if (upgrade.combat) {
+      for (const [key, value] of Object.entries(upgrade.combat)) {
+        this.combat[key] = (this.combat[key] || 0) + value;
+      }
+    }
+    if (upgrade.modifiers) this._applyModifiers(upgrade, modifierMode);
+  }
+
+  _applyModifiers(upgrade, modifierMode) {
     if (modifierMode === "instant" || upgrade.modifierMode === "instant") {
       if (upgrade.modifiers.healPercent) {
         this.hp = Math.min(
@@ -90,10 +98,15 @@ export class Player {
         this.projectileRadius *= 1 + value;
       } else if (key === "pierce") {
         this.pierce += value;
+      } else if (key === "projectileSpeed") {
+        this.combat.projectileSpeed = (this.combat.projectileSpeed || 0) + value;
       } else if (key === "hp") {
         const oldMax = this.maxHp;
-        this.stats.hp =
-          (this.stats.hp || 0) * (mode === "additive" ? 1 + value : 1 + value);
+        if (mode === "additive") {
+          this.stats.hp = (this.stats.hp || 0) + value;
+        } else {
+          this.stats.hp = (this.stats.hp || 0) * (1 + value);
+        }
         this.maxHp = this.stats.hp;
         this.hp += this.maxHp - oldMax;
       } else if (this.stats[key] !== undefined) {
@@ -106,15 +119,23 @@ export class Player {
     }
   }
 
-  _applySpecialUpgrade(upgrade) {
-    const stacks = (this.upgradeStacks[upgrade.id] || 0) + 1;
-    this.upgradeStacks[upgrade.id] = stacks;
-
-    const effect = upgrade.effect;
-    if (!this.specialAbilities[effect]) {
-      this.specialAbilities[effect] = { stacks: 0, ...(upgrade.params || {}) };
+  _applySpecialUpgrade(upgrade, stacks) {
+    const spec = { stacks };
+    const params = upgrade.params || {};
+    const perStack = upgrade.perStack || {};
+    const keys = new Set([...Object.keys(params), ...Object.keys(perStack)]);
+    for (const key of keys) {
+      const base = params[key];
+      const extra = perStack[key] || 0;
+      if (typeof base === "number") {
+        spec[key] = base + extra * (stacks - 1);
+      } else if (typeof extra === "number" && perStack[key] != null && base == null) {
+        spec[key] = extra * stacks;
+      } else if (base !== undefined) {
+        spec[key] = base;
+      }
     }
-    this.specialAbilities[effect].stacks = stacks;
+    this.specialAbilities[upgrade.effect] = spec;
   }
 
   getStat(name) {

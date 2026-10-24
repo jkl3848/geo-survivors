@@ -65,7 +65,7 @@
     "isBoss": true,
     "xpValue": 100,
     "baseStats": {
-      "hp": 800,
+      "hp": 1400,
       "attack": 15,
       "defense": 8,
       "speed": 34
@@ -81,7 +81,7 @@
     "isBoss": true,
     "xpValue": 150,
     "baseStats": {
-      "hp": 500,
+      "hp": 2600,
       "attack": 50,
       "defense": 8,
       "speed": 96

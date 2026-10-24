@@ -48,5 +48,32 @@
   "xp": {
     "baseToLevel": 50,
     "levelGrowth": 1.35
+  },
+  "combatDefaults": {
+    "critChance": 0.05,
+    "critMultiplier": 1.5,
+    "chainDamage": 0.45,
+    "burnDps": 0.5,
+    "burnDuration": 2.5,
+    "slowAmount": 0.25,
+    "slowDuration": 1.6,
+    "freezeDuration": 1.2,
+    "shockBonus": 0.12,
+    "shockDuration": 3.5,
+    "forwardShots": 1,
+    "defenseK": 100,
+    "maxProcDepth": 3,
+    "chainRange": 155,
+    "explosionRadius": 78,
+    "shardCount": 5,
+    "shardDamage": 0.3,
+    "shardSpeed": 280,
+    "shardLifetime": 0.85,
+    "fanSpacing": 0.34,
+    "fanSpacingMin": 0.07,
+    "ricochetRange": 260,
+    "bossFreezeScale": 0.35,
+    "bossSlowCap": 0.3,
+    "thermalShockBonus": 0.8
   }
 }

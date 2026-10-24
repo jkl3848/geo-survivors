@@ -5,12 +5,11 @@ export class DevPanel {
     this.visible = false;
 
     this.root = document.createElement("div");
-    this.root.hidden = true;
     this.root.style.cssText = [
       "position:absolute",
       "inset:0",
       "z-index:100",
-      "display:flex",
+      "display:none",
       "align-items:center",
       "justify-content:center",
       "background:rgba(0,0,0,0.55)",
@@ -19,7 +18,7 @@ export class DevPanel {
 
     this.panel = document.createElement("div");
     this.panel.style.cssText = [
-      "width:min(420px,92vw)",
+      "width:min(480px,92vw)",
       "max-height:85vh",
       "overflow-y:auto",
       "padding:20px",
@@ -44,6 +43,24 @@ export class DevPanel {
     this.panel.appendChild(hint);
 
     this._addSection("Upgrades", (section) => {
+      this.pathSelect = document.createElement("select");
+      this.pathSelect.style.cssText = this._inputStyle();
+      for (const [value, label] of [
+        ["all", "All paths"],
+        ["lightning", "Lightning"],
+        ["fire", "Fire"],
+        ["frost", "Frost"],
+        ["gunner", "Gunner"],
+        ["core", "Core"],
+      ]) {
+        const opt = document.createElement("option");
+        opt.value = value;
+        opt.textContent = label;
+        this.pathSelect.appendChild(opt);
+      }
+      this.pathSelect.addEventListener("change", () => this._refresh());
+      section.appendChild(this.pathSelect);
+
       this.upgradeSelect = document.createElement("select");
       this.upgradeSelect.style.cssText = this._inputStyle();
       section.appendChild(this.upgradeSelect);
@@ -63,7 +80,24 @@ export class DevPanel {
           }
         }),
       );
+      row.appendChild(
+        this._makeButton("Grant 5 from path", () => {
+          const tag = this.pathSelect.value;
+          if (tag === "all") {
+            this._flashStatus(this.upgradeStatus, "Pick a path first");
+            return;
+          }
+          const applied = this.actions.grantRandom?.(tag, 5) || 0;
+          this._flashStatus(this.upgradeStatus, `Granted ${applied}`);
+          this._refresh();
+        }),
+      );
       section.appendChild(row);
+
+      this.buildReadout = document.createElement("pre");
+      this.buildReadout.style.cssText =
+        "margin:0;color:#aed6f1;font-size:11px;white-space:pre-wrap;font-family:inherit;";
+      section.appendChild(this.buildReadout);
     });
 
     this._addSection("Enemy level", (section) => {
@@ -188,18 +222,34 @@ export class DevPanel {
   _refresh() {
     const state = this.getState();
 
+    const filter = this.pathSelect.value;
+    const previous = this.upgradeSelect.value;
     this.upgradeSelect.innerHTML = "";
     for (const upgrade of state.upgrades) {
+      if (filter === "core" && upgrade.tags?.length) continue;
+      if (
+        filter !== "all" &&
+        filter !== "core" &&
+        !upgrade.tags?.includes(filter)
+      ) {
+        continue;
+      }
       const stacks = state.playerStacks[upgrade.id] || 0;
       const opt = document.createElement("option");
       opt.value = upgrade.id;
-      opt.textContent = `${upgrade.name}${stacks > 0 ? ` (x${stacks})` : ""}`;
+      const tags = upgrade.tags?.length ? ` [${upgrade.tags.join("/")}]` : "";
+      opt.textContent = `${upgrade.name}${tags}${stacks > 0 ? ` (x${stacks})` : ""}`;
       this.upgradeSelect.appendChild(opt);
+    }
+    if (previous && [...this.upgradeSelect.options].some((opt) => opt.value === previous)) {
+      this.upgradeSelect.value = previous;
     }
 
     const selectedId = this.upgradeSelect.value;
     const stacks = state.playerStacks[selectedId] || 0;
     this.upgradeStatus.textContent = stacks > 0 ? `Currently owned: x${stacks}` : "";
+
+    this.buildReadout.textContent = (state.buildSummary || []).join("\n");
 
     this.enemyLevelInput.value = String(state.enemyLevel);
     this.enemyLevelStatus.textContent = `Elapsed: ${state.elapsed.toFixed(1)}s`;
@@ -207,13 +257,13 @@ export class DevPanel {
 
   show() {
     this.visible = true;
-    this.root.hidden = false;
+    this.root.style.display = "flex";
     this._refresh();
   }
 
   hide() {
     this.visible = false;
-    this.root.hidden = true;
+    this.root.style.display = "none";
   }
 
   toggle() {

@@ -10,8 +10,12 @@ import { SpawnSystem } from "../systems/SpawnSystem.js";
 import { CombatSystem } from "../systems/CombatSystem.js";
 import { CollisionSystem } from "../systems/CollisionSystem.js";
 import { LevelSystem } from "../systems/LevelSystem.js";
+import { AbilitySystem } from "../systems/AbilitySystem.js";
 import { Renderer } from "../render/Renderer.js";
+import { VFX } from "../render/VFX.js";
 import { HUD } from "../render/HUD.js";
+import { pathColor, dominantPath } from "../config/combatStats.js";
+import { upgradeChoiceAt } from "../render/upgradeLayout.js";
 import { ColorUnlocks } from "../editor/ColorUnlocks.js";
 import { DevPanel } from "../dev/DevPanel.js";
 
@@ -40,7 +44,7 @@ export class Game {
     );
 
     this.enemyPool = new ObjectPool(() => new Enemy(), 64);
-    this.projectilePool = new ObjectPool(() => new Projectile(), 32);
+    this.projectilePool = new ObjectPool(() => new Projectile(), 128);
     this.xpPool = new ObjectPool(() => new XPOrb(), 64);
 
     this.spatialHash = new SpatialHash(32);
@@ -52,6 +56,19 @@ export class Game {
     this.combatSystem = new CombatSystem(configs.stats);
     this.collisionSystem = new CollisionSystem(this.spatialHash);
     this.levelSystem = new LevelSystem(configs.stats.xp, configs.upgrades);
+    this.vfx = new VFX();
+    this.abilitySystem = new AbilitySystem({
+      player: this.player,
+      tuning: configs.stats.combatDefaults || {},
+      combatSystem: this.combatSystem,
+      vfx: this.vfx,
+      getEnemies: () => this.enemyPool.getActive(),
+      getProjectiles: () => this.projectilePool.getActive(),
+      queryRadius: (x, y, radius) =>
+        this.spatialHash.queryRadius(x, y, radius).slice(),
+      spawnProjectile: (spec) => this._spawnProjectile(spec),
+      onDeath: (enemy) => this._onEnemyDeath(enemy),
+    });
 
     this.renderer = null;
     this.hud = null;
@@ -136,6 +153,7 @@ export class Game {
       this.characterData.bounds,
       pc,
       this.characterData.color,
+      this.configs.stats.combatDefaults || {},
     );
 
     this.enemyPool.releaseAll();
@@ -143,6 +161,8 @@ export class Game {
     this.xpPool.releaseAll();
     this.spawnSystem.reset();
     this.levelSystem.reset();
+    this.abilitySystem.reset();
+    this.vfx.clear();
 
     this.renderer = new Renderer(this.ctx, width, height);
     this.hud = new HUD(this.ctx, width);
@@ -154,12 +174,17 @@ export class Game {
         getState: () => ({
           upgrades: this.levelSystem.getAllUpgrades(),
           playerStacks: this.levelSystem.playerStacks,
+          tagCounts: this.levelSystem.tagCounts,
+          combat: this.player.combat,
+          buildSummary: this.levelSystem.getBuildSummary(this.player),
           enemyLevel: this.spawnSystem.getEnemyLevel() + 1,
           elapsed: this.spawnSystem.elapsed,
         }),
         actions: {
           applyUpgrade: (id) =>
             this.levelSystem.applyUpgradeById(id, this.player),
+          grantRandom: (tag, count) =>
+            this.levelSystem.grantRandom(tag, count, this.player),
           setEnemyLevel: (level) => this.spawnSystem.setEnemyLevel(level),
           spawnBoss: (typeId) =>
             this.spawnSystem.spawnBoss(typeId, width, height),
@@ -215,22 +240,14 @@ export class Game {
   }
 
   _getUpgradeClickChoiceAt(mx, my) {
-    const choices = this.levelSystem.upgradeChoices;
     const { width, height } = this.canvas;
-    const cardW = 200;
-    const cardH = 130;
-    const gap = 20;
-    const totalW = choices.length * cardW + (choices.length - 1) * gap;
-    const startX = (width - totalW) / 2;
-    const cardY = height / 2 - 45;
-
-    for (let i = 0; i < choices.length; i++) {
-      const cx = startX + i * (cardW + gap);
-      if (mx >= cx && mx <= cx + cardW && my >= cardY && my <= cardY + cardH) {
-        return i;
-      }
-    }
-    return -1;
+    return upgradeChoiceAt(
+      mx,
+      my,
+      this.levelSystem.upgradeChoices.length,
+      width,
+      height,
+    );
   }
 
   _checkUnlocks() {
@@ -291,6 +308,7 @@ export class Game {
       return;
     }
 
+    this.vfx.update(dt);
     this.player.update(dt, this.input, this.canvas.width, this.canvas.height);
     this.spawnSystem.update(dt, this.canvas.width, this.canvas.height);
 
@@ -333,19 +351,38 @@ export class Game {
     this.collisionSystem.rebuild(enemies, xpOrbs);
     this.collisionSystem.resolveEnemyOverlaps(enemies);
     this.collisionSystem.rebuild(enemies, xpOrbs);
+    this.abilitySystem.update(dt);
+    this.collisionSystem.rebuild(
+      this.enemyPool.getActive(),
+      this.xpPool.getActive(),
+    );
 
-    for (const proj of projectiles) {
+    for (const proj of [...this.projectilePool.getActive()]) {
       if (!proj.active) continue;
-      const hit = this.collisionSystem.checkProjectileHits(proj, enemies);
-      if (hit) {
-        proj.hitIds.add(hit);
-        this._damageEnemy(hit, proj.damage);
-        if (proj.pierceLeft > 0) {
-          proj.pierceLeft--;
-        } else {
-          proj.reset();
-          this.projectilePool.release(proj);
-        }
+      const hit = this.collisionSystem.checkProjectileHits(
+        proj,
+        this.enemyPool.getActive(),
+      );
+      if (!hit) continue;
+      proj.hitIds.add(hit);
+      this.abilitySystem.dealDamage(hit, proj.damage, {
+        source: proj.source || "projectile",
+        projectile: proj,
+        canProc: proj.canProc !== false,
+        depth: proj.procDepth || 0,
+        allowCrit: proj.allowCrit !== false,
+      });
+      if (!proj.active) continue;
+      if (proj.pierceLeft > 0) {
+        proj.pierceLeft--;
+      } else if (
+        proj.ricochetLeft > 0 &&
+        this.abilitySystem.redirectProjectile(proj)
+      ) {
+        proj.ricochetLeft--;
+      } else {
+        proj.reset();
+        this.projectilePool.release(proj);
       }
     }
 
@@ -363,7 +400,7 @@ export class Game {
           );
         }
         this.player.takeDamage(totalDmg);
-        this._triggerRetaliation(totalDmg);
+        this.abilitySystem.onPlayerHit(totalDmg, touching);
         this.player.contactCooldown = this.configs.stats.player.contactCooldown;
       }
     }
@@ -410,49 +447,44 @@ export class Game {
   }
 
   _firePlayerProjectiles(angle) {
-    const angles = [angle];
-
-    if (this.player.hasSpecial("rear_shot")) {
-      const stacks = this.player.getSpecial("rear_shot").stacks;
-      for (let i = 0; i < stacks; i++) {
-        angles.push(angle + Math.PI);
-      }
-    }
-
-    if (this.player.hasSpecial("side_shot")) {
-      const stacks = this.player.getSpecial("side_shot").stacks;
-      for (let i = 0; i < stacks; i++) {
-        angles.push(angle + Math.PI / 2, angle - Math.PI / 2);
-      }
-    }
-
-    if (this.player.hasSpecial("scatter_shot")) {
-      const spec = this.player.getSpecial("scatter_shot");
-      const count = spec.count || 3;
-      const spread = spec.spread || 0.35;
-      for (let i = 0; i < count * spec.stacks; i++) {
-        const offset = spread * (i - (count - 1) / 2);
-        angles.push(angle + offset);
-      }
-    }
-
+    const angles = this.abilitySystem.buildVolley(angle);
     const damage = this.combatSystem.calcPlayerDamage(
       this.player.getStat("attack"),
     );
-    const speed = this.configs.stats.player.projectileSpeed;
+    const speed =
+      this.configs.stats.player.projectileSpeed *
+      (1 + (this.player.combat.projectileSpeed || 0));
+    const color = pathColor(dominantPath(this.levelSystem.tagCounts));
 
     for (const fireAngle of angles) {
-      const proj = this.projectilePool.acquire();
-      proj.init(
-        this.player.x,
-        this.player.y,
-        fireAngle,
+      this._spawnProjectile({
+        x: this.player.x + Math.cos(fireAngle) * 8,
+        y: this.player.y + Math.sin(fireAngle) * 8,
+        angle: fireAngle,
         speed,
         damage,
-        this.player.projectileRadius,
-        this.player.pierce,
-      );
+        radius: this.player.projectileRadius,
+        pierce: this.player.pierce,
+        color,
+        ricochet: this.player.combat.ricochet || 0,
+        source: "projectile",
+      });
     }
+  }
+
+  _spawnProjectile(spec) {
+    const proj = this.projectilePool.acquire();
+    proj.init(
+      spec.x,
+      spec.y,
+      spec.angle,
+      spec.speed,
+      spec.damage,
+      spec.radius ?? this.player.projectileRadius,
+      spec.pierce ?? 0,
+      spec,
+    );
+    return proj;
   }
 
   _onEnemyDeath(enemy) {
@@ -494,33 +526,6 @@ export class Game {
     }
   }
 
-  _damageEnemy(enemy, damage) {
-    const killed = enemy.takeDamage(damage);
-    if (killed) {
-      this._onEnemyDeath(enemy);
-    }
-    return killed;
-  }
-
-  _triggerRetaliation(damageTaken) {
-    const spec = this.player.getSpecial("retaliation");
-    if (!spec || damageTaken <= 0) return;
-
-    const radius = spec.radius || 120;
-    const radiusSq = radius * radius;
-    const damage = damageTaken * (spec.damageMultiplier || 1) * spec.stacks;
-    const enemies = this.enemyPool.getActive();
-
-    for (const enemy of enemies) {
-      if (!enemy.active) continue;
-      const dx = enemy.x - this.player.x;
-      const dy = enemy.y - this.player.y;
-      if (dx * dx + dy * dy <= radiusSq) {
-        this._damageEnemy(enemy, damage);
-      }
-    }
-  }
-
   _cleanupPools() {
     for (const proj of [...this.projectilePool.getActive()]) {
       if (!proj.active) this.projectilePool.release(proj);
@@ -547,6 +552,7 @@ export class Game {
     this.renderer.drawEnemies(enemies);
     this.renderer.drawProjectiles(projectiles);
     this.renderer.drawPlayer(this.player);
+    this.vfx.draw(this.ctx);
 
     this.hud.draw(
       this.player,
@@ -569,6 +575,7 @@ export class Game {
         this.levelSystem.playerStacks,
         this.levelSystem.isSpecialRoll,
         this.levelSystem.isBossDrop,
+        (choice) => this.levelSystem.previewLines(choice, this.player),
       );
     }
 
