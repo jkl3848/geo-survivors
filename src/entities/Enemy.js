@@ -34,10 +34,31 @@ export class Enemy {
     this.shootTimer = 0;
     this.shootInterval = 2;
     this.launched = false;
+    this._resetStatus();
+  }
+
+  _resetStatus() {
+    this.status = {
+      burn: null,
+      slow: 0,
+      slowAmount: 0,
+      freeze: 0,
+      shock: 0,
+    };
+  }
+
+  getMoveScale() {
+    if (!this.status) return 1;
+    if (this.status.freeze > 0) return 0;
+    if (this.status.slow > 0) {
+      return Math.max(0.15, 1 - (this.status.slowAmount || 0));
+    }
+    return 1;
   }
 
   init(typeDef, x, y, levelScale, spawnTime, options = {}) {
     this.active = true;
+    this._resetStatus();
     this.x = x;
     this.y = y;
     this.typeId = typeDef.id;
@@ -100,6 +121,7 @@ export class Enemy {
     this.behavior = 'chase';
     this.rotation = 0;
     this.bossPhase = '';
+    this._resetStatus();
   }
 
   update(dt, playerX, playerY, worldW, worldH, context = {}) {
@@ -121,6 +143,9 @@ export class Enemy {
   }
 
   _updateChase(dt, playerX, playerY, worldW, worldH) {
+    const scale = this.getMoveScale();
+    if (scale <= 0) return;
+    dt *= scale;
     const dx = playerX - this.x;
     const dy = playerY - this.y;
     const dist = Math.hypot(dx, dy);
@@ -132,8 +157,10 @@ export class Enemy {
   }
 
   _updateLaunched(dt, worldW, worldH) {
-    this.x += this.vx * dt;
-    this.y += this.vy * dt;
+    const scale = this.getMoveScale();
+    if (scale <= 0) return;
+    this.x += this.vx * dt * scale;
+    this.y += this.vy * dt * scale;
 
     if (
       this.x - this.radius < 0
@@ -149,9 +176,10 @@ export class Enemy {
     const dx = playerX - this.x;
     const dy = playerY - this.y;
     const dist = Math.hypot(dx, dy);
-    if (dist > 0) {
-      this.x += (dx / dist) * this.speed * 0.4 * dt;
-      this.y += (dy / dist) * this.speed * 0.4 * dt;
+    const scale = this.getMoveScale();
+    if (dist > 0 && scale > 0) {
+      this.x += (dx / dist) * this.speed * 0.4 * dt * scale;
+      this.y += (dy / dist) * this.speed * 0.4 * dt * scale;
     }
     wrapPosition(this, worldW, worldH);
 
@@ -163,7 +191,8 @@ export class Enemy {
   }
 
   _updateBossOctagon(dt, playerX, playerY, worldW, worldH) {
-    this.rotation += this.spinSpeed * dt;
+    const scale = this.getMoveScale();
+    this.rotation += this.spinSpeed * dt * scale;
 
     if (this.bossPhase === 'spin') {
       this.bossPhaseTimer -= dt;
@@ -186,8 +215,8 @@ export class Enemy {
         this.spinSpeed = 22;
       }
     } else if (this.bossPhase === 'dash') {
-      this.x += this.dashVx * dt;
-      this.y += this.dashVy * dt;
+      this.x += this.dashVx * dt * scale;
+      this.y += this.dashVy * dt * scale;
 
       const margin = this.radius * 2;
       if (
@@ -226,8 +255,8 @@ export class Enemy {
   }
 
   takeDamage(amount) {
-    const actual = Math.max(1, amount - this.defense * 0.5);
-    this.hp -= actual;
+    if (!this.active || this.hp <= 0) return false;
+    this.hp -= amount;
     this.hitFlash = 0.12;
     return this.hp <= 0;
   }

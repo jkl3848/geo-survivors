@@ -1,5 +1,4 @@
 import {
-  findMainBody,
   analyzeShape,
   createPixelArtCanvas,
   processShape,
@@ -301,8 +300,15 @@ export class CharacterEditor {
   }
 
   _getAnalysis() {
-    const body = findMainBody(this.grid, GRID_SIZE, GRID_SIZE);
-    if (!body) return null;
+    const body = processShape(this.grid, GRID_SIZE, GRID_SIZE);
+    let hasPixel = false;
+    for (let i = 0; i < body.length; i++) {
+      if (body[i]) {
+        hasPixel = true;
+        break;
+      }
+    }
+    if (!hasPixel) return null;
     const analysis = analyzeShape(body, GRID_SIZE, GRID_SIZE, this.statsConfig);
     analysis.stats = applyColorTraits(analysis.stats, this.selectedColor?.traits);
     return analysis;
@@ -330,7 +336,7 @@ export class CharacterEditor {
       <hr style="border-color:#333;margin:10px 0">
       <p style="color:#888;font-size:11px">Area: ${m.area}px</p>
       <p style="color:#888;font-size:11px">Roundness: ${(m.roundness * 100).toFixed(0)}%</p>
-      <p style="color:#888;font-size:11px">Pointiness: ${(Math.max(0, m.pointiness) * 100).toFixed(0)}%</p>
+      <p style="color:#888;font-size:11px">Pointiness: ${(m.pointiness * 100).toFixed(0)}%</p>
       ${!analysis.valid ? '<p style="color:#e74c3c;margin-top:8px">Shape too small!</p>' : ''}
     `;
   }

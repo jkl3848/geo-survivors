@@ -10,3 +10,10 @@ export const RARITY_STYLES = {
 export function getRarityStyle(rarity) {
   return RARITY_STYLES[rarity] || RARITY_STYLES[1];
 }
+
+const MAX_RARITY = Math.max(...Object.keys(RARITY_STYLES).map(Number));
+
+export function getRarityWeight(rarity) {
+  const r = rarity || 1;
+  return Math.pow(2, MAX_RARITY - r);
+}

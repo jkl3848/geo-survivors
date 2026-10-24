@@ -12,9 +12,17 @@ export class Projectile {
     this.pierceLeft = 0;
     this.lifetime = 3;
     this.hitIds = new Set();
+    this.color = "#ecf0f1";
+    this.ricochetLeft = 0;
+    this.critFlash = 0;
+    this.procDepth = 0;
+    this.canProc = true;
+    this.source = "projectile";
+    this.allowCrit = true;
+    this.zapTimer = 0;
   }
 
-  init(x, y, angle, speed, damage, radius, pierce) {
+  init(x, y, angle, speed, damage, radius, pierce, extra = {}) {
     this.active = true;
     this.x = x;
     this.y = y;
@@ -23,13 +31,24 @@ export class Projectile {
     this.damage = damage;
     this.radius = radius;
     this.pierceLeft = pierce;
-    this.lifetime = 3;
+    this.lifetime = extra.lifetime ?? 3;
+    this.color = extra.color || "#ecf0f1";
+    this.ricochetLeft = extra.ricochet || 0;
+    this.critFlash = 0;
+    this.procDepth = extra.procDepth || 0;
+    this.canProc = extra.canProc !== false;
+    this.source = extra.source || "projectile";
+    this.allowCrit = extra.allowCrit !== false;
+    this.zapTimer = Math.random() * 0.25;
     this.hitIds.clear();
   }
 
   reset() {
     this.active = false;
     this.hitIds.clear();
+    this.critFlash = 0;
+    this.ricochetLeft = 0;
+    this.source = "projectile";
   }
 
   update(dt, worldW, worldH) {
@@ -37,6 +56,7 @@ export class Projectile {
     this.x += this.vx * dt;
     this.y += this.vy * dt;
     this.lifetime -= dt;
+    if (this.critFlash > 0) this.critFlash = Math.max(0, this.critFlash - dt);
     wrapPosition(this, worldW, worldH);
     if (this.lifetime <= 0) {
       this.active = false;

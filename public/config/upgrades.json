@@ -1,6 +1,7 @@
 {
   "modifierMode": "multiplicative",
   "specialInterval": 5,
+  "pathAffinity": { "bonusPerPick": 0.5, "maxBonus": 3 },
   "bossDropPool": [
     {
       "id": "overdrive",
@@ -15,45 +16,390 @@
       "description": "+30% max HP and defense",
       "modifiers": { "hp": 0.3, "defense": 0.3 },
       "rarity": 6
-    },
-    {
-      "id": "ultra_scatter_shot",
-      "name": "Ultra Scatter",
-      "description": "Fire 3 extra projectiles in a spread",
-      "effect": "scatter_shot",
-      "params": { "count": 3, "spread": 0.35 },
-      "special": true,
-      "rarity": 6
     }
   ],
   "specialPool": [
     {
-      "id": "rear_shot",
-      "name": "Rear Guard",
-      "description": "Fire an extra projectile behind you",
-      "effect": "rear_shot",
-      "special": true,
-      "rarity": 6
+      "id": "thunderstorm",
+      "name": "Thunderstorm",
+      "description": "Bolts rain on nearby enemies. Extra copies add bolts.",
+      "effect": "thunderstorm",
+      "params": { "interval": 0.9, "bolts": 3, "range": 340, "damage": 1.7 },
+      "perStack": { "bolts": 1, "interval": -0.08 },
+      "tags": ["lightning"],
+      "rarity": 6,
+      "maxStacks": 3
     },
     {
-      "id": "retaliation",
-      "name": "Retaliation",
-      "description": "When hit, damage all nearby enemies",
-      "effect": "retaliation",
-      "params": { "radius": 120, "damageMultiplier": 1.0 },
-      "special": true,
-      "rarity": 6
+      "id": "ball_lightning",
+      "name": "Ball Lightning",
+      "description": "Your shots zap enemies they pass. Extra copies zap harder.",
+      "effect": "ball_lightning",
+      "params": { "interval": 0.42, "radius": 52, "damage": 0.28 },
+      "perStack": { "damage": 0.1, "radius": 8 },
+      "tags": ["lightning"],
+      "rarity": 6,
+      "maxStacks": 3
+    },
+    {
+      "id": "napalm_rounds",
+      "name": "Napalm Rounds",
+      "description": "Your shots explode. Extra copies enlarge the blast.",
+      "combat": { "napalm": 1, "explosionDamage": 1.4 },
+      "tags": ["fire"],
+      "rarity": 6,
+      "maxStacks": 3
+    },
+    {
+      "id": "meteor",
+      "name": "Meteor",
+      "description": "A meteor hits the biggest crowd and ignites it.",
+      "effect": "meteor",
+      "params": { "interval": 6, "radius": 100, "damage": 2.4 },
+      "perStack": { "damage": 0.7, "interval": -0.45, "radius": 12 },
+      "tags": ["fire"],
+      "rarity": 6,
+      "maxStacks": 3
+    },
+    {
+      "id": "frost_nova",
+      "name": "Frost Nova",
+      "description": "A pulse freezes everything around you.",
+      "effect": "nova",
+      "params": { "interval": 7, "radius": 150, "freeze": 1.4, "damage": 1.6 },
+      "perStack": { "interval": -0.7, "radius": 16, "freeze": 0.2 },
+      "tags": ["frost"],
+      "rarity": 6,
+      "maxStacks": 3
+    },
+    {
+      "id": "absolute_zero",
+      "name": "Absolute Zero",
+      "description": "A slowing aura surrounds you. Extra copies widen it.",
+      "effect": "aura",
+      "params": { "radius": 120, "slow": 0.28 },
+      "perStack": { "radius": 24, "slow": 0.06 },
+      "tags": ["frost"],
+      "rarity": 6,
+      "maxStacks": 3
+    },
+    {
+      "id": "bullet_hell",
+      "name": "Bullet Hell",
+      "description": "Fire 3 extra shots in a widening fan.",
+      "combat": { "forwardShots": 3 },
+      "tags": ["gunner"],
+      "rarity": 6,
+      "maxStacks": 1
+    },
+    {
+      "id": "rear_guard",
+      "name": "Rear Guard",
+      "description": "Fire behind you. Extra copies spread into a fan.",
+      "combat": { "rearShots": 1 },
+      "tags": ["gunner"],
+      "rarity": 6,
+      "maxStacks": 4
     },
     {
       "id": "orbital_strike",
       "name": "Orbital Strike",
-      "description": "Fire extra projectiles at 90° angles",
-      "effect": "side_shot",
-      "special": true,
-      "rarity": 6
+      "description": "Fire to both sides. Extra copies fan out.",
+      "combat": { "sideShots": 1 },
+      "tags": ["gunner"],
+      "rarity": 6,
+      "maxStacks": 3
+    },
+    {
+      "id": "gatling",
+      "name": "Gatling",
+      "description": "Much faster fire, and your shots spray a little.",
+      "modifiers": { "attackSpeed": 0.45 },
+      "combat": { "shotSpread": 0.18 },
+      "tags": ["gunner"],
+      "rarity": 6,
+      "maxStacks": 2
     }
   ],
   "pool": [
+    {
+      "id": "static_charge",
+      "name": "Static Charge",
+      "description": "+8% attack speed. Shots sometimes arc once.",
+      "modifiers": { "attackSpeed": 0.08 },
+      "combat": { "chainChance": 0.1, "chainJumps": 1 },
+      "tags": ["lightning"],
+      "rarity": 1
+    },
+    {
+      "id": "spark",
+      "name": "Spark",
+      "description": "+10% attack and a better chance to arc.",
+      "modifiers": { "attack": 0.1 },
+      "combat": { "chainChance": 0.08 },
+      "tags": ["lightning"],
+      "rarity": 2
+    },
+    {
+      "id": "chain_lightning",
+      "name": "Chain Lightning",
+      "description": "Hits arc to nearby enemies.",
+      "combat": { "chainChance": 0.2, "chainJumps": 2 },
+      "tags": ["lightning"],
+      "rarity": 3
+    },
+    {
+      "id": "overcharge",
+      "name": "Overcharge",
+      "description": "Arcs shock enemies, and shocked enemies take more damage.",
+      "combat": { "shockOnChain": 1, "shockBonus": 0.12 },
+      "requires": { "combat": { "chainChance": 0.05 } },
+      "tags": ["lightning"],
+      "rarity": 2
+    },
+    {
+      "id": "conductor",
+      "name": "Conductor",
+      "description": "Arcs jump farther and hit harder.",
+      "combat": { "chainJumps": 1, "chainDamage": 0.15 },
+      "requires": { "combat": { "chainJumps": 1 } },
+      "tags": ["lightning"],
+      "rarity": 4
+    },
+    {
+      "id": "storm_caller",
+      "name": "Storm Caller",
+      "description": "Bolts strike nearby enemies. Extra copies add bolts.",
+      "effect": "storm",
+      "params": { "interval": 3.2, "bolts": 1, "range": 300, "damage": 1.4 },
+      "perStack": { "bolts": 1, "interval": -0.25 },
+      "tags": ["lightning"],
+      "rarity": 5
+    },
+    {
+      "id": "kindling",
+      "name": "Kindling",
+      "description": "+10% attack. Shots sometimes set enemies on fire.",
+      "modifiers": { "attack": 0.1 },
+      "combat": { "burnChance": 0.12 },
+      "tags": ["fire"],
+      "rarity": 1
+    },
+    {
+      "id": "cinder",
+      "name": "Cinder",
+      "description": "+12% attack and more burn chance.",
+      "modifiers": { "attack": 0.12 },
+      "combat": { "burnChance": 0.1 },
+      "tags": ["fire"],
+      "rarity": 2
+    },
+    {
+      "id": "ignite",
+      "name": "Ignite",
+      "description": "Burns last longer and deal more damage.",
+      "combat": { "burnChance": 0.22, "burnDps": 0.45, "burnDuration": 1.2 },
+      "tags": ["fire"],
+      "rarity": 3
+    },
+    {
+      "id": "accelerant",
+      "name": "Accelerant",
+      "description": "Burns deal more damage and linger.",
+      "combat": { "burnDps": 0.4, "burnDuration": 1.5 },
+      "requires": { "combat": { "burnChance": 0.05 } },
+      "tags": ["fire"],
+      "rarity": 2
+    },
+    {
+      "id": "combustion",
+      "name": "Combustion",
+      "description": "Burning enemies explode when they die.",
+      "combat": { "explodeChance": 1, "explosionDamage": 0.5 },
+      "requires": { "combat": { "burnChance": 0.05 } },
+      "tags": ["fire"],
+      "rarity": 4
+    },
+    {
+      "id": "wildfire",
+      "name": "Wildfire",
+      "description": "Explosions are stronger and ignite nearby enemies.",
+      "combat": { "burnSpread": 1, "explosionDamage": 0.2 },
+      "requires": { "anyCombat": { "explodeChance": 0.5, "napalm": 0.5 } },
+      "tags": ["fire"],
+      "rarity": 5
+    },
+    {
+      "id": "chill",
+      "name": "Chill",
+      "description": "+10% defense. Shots sometimes slow enemies.",
+      "modifiers": { "defense": 0.1 },
+      "combat": { "slowChance": 0.14, "slowAmount": 0.1 },
+      "tags": ["frost"],
+      "rarity": 1
+    },
+    {
+      "id": "frostbite",
+      "name": "Frostbite",
+      "description": "Slows are stronger, longer, and more common.",
+      "combat": { "slowChance": 0.28, "slowAmount": 0.22, "slowDuration": 0.9 },
+      "tags": ["frost"],
+      "rarity": 3
+    },
+    {
+      "id": "glacial_armor",
+      "name": "Glacial Armor",
+      "description": "Enemies that touch you are chilled.",
+      "combat": { "glacialArmor": 1, "slowAmount": 0.12 },
+      "tags": ["frost"],
+      "rarity": 2
+    },
+    {
+      "id": "deep_freeze",
+      "name": "Deep Freeze",
+      "description": "Hits can freeze enemies solid.",
+      "combat": { "freezeChance": 0.14, "freezeDuration": 0.5 },
+      "requires": { "combat": { "slowChance": 0.05 } },
+      "tags": ["frost"],
+      "rarity": 4
+    },
+    {
+      "id": "ice_lance",
+      "name": "Ice Lance",
+      "description": "Fire an extra piercing shot. +18% attack, +25% attack speed, and a chance to freeze.",
+      "modifiers": { "attack": 0.18, "attackSpeed": 0.25, "pierce": 1 },
+      "modifierMode": "multiplicative",
+      "combat": { "freezeChance": 0.06, "forwardShots": 1 },
+      "tags": ["frost"],
+      "rarity": 4
+    },
+    {
+      "id": "shatter",
+      "name": "Shatter",
+      "description": "Frozen enemies take double damage and burst into ice shards.",
+      "combat": { "shatterBonus": 1, "shatterShards": 1 },
+      "requires": { "combat": { "freezeChance": 0.05 } },
+      "tags": ["frost"],
+      "rarity": 5
+    },
+    {
+      "id": "sleek_shot",
+      "name": "Sleek Shot",
+      "description": "+12% projectile speed.",
+      "combat": { "projectileSpeed": 0.12 },
+      "tags": ["gunner"],
+      "rarity": 1
+    },
+    {
+      "id": "speed_shot",
+      "name": "Speed Shot",
+      "description": "+18% projectile speed.",
+      "combat": { "projectileSpeed": 0.18 },
+      "tags": ["gunner"],
+      "rarity": 4
+    },
+    {
+      "id": "tiny_bullets",
+      "name": "Tiny Bullets",
+      "description": "Faster, smaller shots.",
+      "modifiers": { "projectileRadius": -0.1 },
+      "combat": { "projectileSpeed": 0.16 },
+      "tags": ["gunner"],
+      "rarity": 3
+    },
+    {
+      "id": "big_bullets",
+      "name": "Big Bullets",
+      "description": "+20% projectile size.",
+      "modifiers": { "projectileRadius": 0.2 },
+      "tags": ["gunner"],
+      "rarity": 2
+    },
+    {
+      "id": "bowling_balls",
+      "name": "Bowling Balls",
+      "description": "+35% projectile size.",
+      "modifiers": { "projectileRadius": 0.35 },
+      "tags": ["gunner"],
+      "rarity": 4
+    },
+    {
+      "id": "twin_shot",
+      "name": "Twin Shot",
+      "description": "Fire an extra shot. Copies spread into a fan.",
+      "combat": { "forwardShots": 1 },
+      "tags": ["gunner"],
+      "rarity": 3
+    },
+    {
+      "id": "deadeye",
+      "name": "Deadeye",
+      "description": "Shots are more likely to crit.",
+      "combat": { "critChance": 0.08 },
+      "tags": ["gunner"],
+      "rarity": 2
+    },
+    {
+      "id": "piercing_shot",
+      "name": "Piercing Shot",
+      "description": "Shots pass through one more enemy.",
+      "modifiers": { "pierce": 1 },
+      "modifierMode": "additive",
+      "tags": ["gunner"],
+      "rarity": 4
+    },
+    {
+      "id": "sniper_shot",
+      "name": "Sniper Shot",
+      "description": "Shots pass through two more enemies.",
+      "modifiers": { "pierce": 2 },
+      "modifierMode": "additive",
+      "tags": ["gunner"],
+      "rarity": 5
+    },
+    {
+      "id": "ricochet",
+      "name": "Ricochet",
+      "description": "Shots bounce to another enemy. Extra copies bounce again.",
+      "combat": { "ricochet": 1 },
+      "tags": ["gunner"],
+      "rarity": 4
+    },
+    {
+      "id": "hollow_point",
+      "name": "Hollow Point",
+      "description": "Critical hits deal much more damage.",
+      "combat": { "critMultiplier": 0.5 },
+      "tags": ["gunner"],
+      "rarity": 5
+    },
+    {
+      "id": "plasma",
+      "name": "Plasma",
+      "description": "Chain arcs set enemies on fire.",
+      "combat": { "plasma": 1, "burnChance": 0.12 },
+      "requires": { "tags": { "lightning": 1, "fire": 1 } },
+      "tags": ["lightning", "fire"],
+      "rarity": 4
+    },
+    {
+      "id": "thermal_shock",
+      "name": "Thermal Shock",
+      "description": "Enemies that are both burning and frozen take a heavy hit.",
+      "combat": { "thermalShock": 1, "shatterBonus": 0.35 },
+      "requires": { "tags": { "fire": 1, "frost": 1 } },
+      "tags": ["fire", "frost"],
+      "rarity": 4
+    },
+    {
+      "id": "static_shards",
+      "name": "Static Shards",
+      "description": "Ice shards chain lightning when they hit.",
+      "combat": { "staticShards": 1, "chainChance": 0.12, "chainJumps": 1 },
+      "requires": { "tags": { "frost": 1, "lightning": 1 } },
+      "tags": ["frost", "lightning"],
+      "rarity": 5
+    },
     {
       "id": "sharp_edge",
       "name": "Sharp Edge",
@@ -99,15 +445,15 @@
     {
       "id": "thick_hide",
       "name": "Thick Hide",
-      "description": "+10% max HP",
-      "modifiers": { "hp": 0.1 },
+      "description": "+12% max HP",
+      "modifiers": { "hp": 0.12 },
       "rarity": 1
     },
     {
       "id": "iron_skin",
       "name": "Iron Skin",
-      "description": "+25% max HP",
-      "modifiers": { "hp": 0.25 },
+      "description": "+28% max HP",
+      "modifiers": { "hp": 0.28 },
       "rarity": 3
     },
     {
@@ -125,47 +471,25 @@
       "rarity": 2
     },
     {
-      "id": "piercing_shot",
-      "name": "Piercing Shot",
-      "description": "+1 projectile pierce",
-      "modifiers": { "pierce": 1 },
-      "rarity": 4,
-      "modifierMode": "additive"
-    },
-    {
-      "id": "sniper_shot",
-      "name": "Sniper Shot",
-      "description": "+2 projectile pierce",
-      "modifiers": { "pierce": 2 },
-      "rarity": 5,
-      "modifierMode": "additive"
-    },
-    {
-      "id": "big_bullets",
-      "name": "Big Bullets",
-      "description": "+20% projectile size",
-      "modifiers": { "projectileRadius": 0.2 },
+      "id": "mend",
+      "name": "Mend",
+      "description": "Regenerate more health over time.",
+      "modifiers": { "healthRegen": 0.45 },
+      "modifierMode": "additive",
       "rarity": 2
-    },
-    {
-      "id": "bowling_balls",
-      "name": "Bowling Balls",
-      "description": "+35% projectile size",
-      "modifiers": { "projectileRadius": 0.35 },
-      "rarity": 4
     },
     {
       "id": "magnet",
       "name": "XP Magnet",
-      "description": "+10% pickup radius",
-      "modifiers": { "pickupRadius": 0.1 },
+      "description": "+15% pickup radius",
+      "modifiers": { "pickupRadius": 0.15 },
       "rarity": 3
     },
     {
       "id": "xp_vacuum",
       "name": "XP Vacuum",
-      "description": "30% pickup radius",
-      "modifiers": { "pickupRadius": 0.3 },
+      "description": "+35% pickup radius",
+      "modifiers": { "pickupRadius": 0.35 },
       "rarity": 5
     },
     {
@@ -175,36 +499,6 @@
       "modifiers": { "healPercent": 0.25 },
       "rarity": 3,
       "modifierMode": "instant"
-    },
-    {
-      "id": "scatter_shot",
-      "name": "Scatter Shot",
-      "description": "Fire 1 extra projectiles in a spread",
-      "effect": "scatter_shot",
-      "params": { "count": 1, "spread": 0.4 },
-      "special": true,
-      "rarity": 4
-    },
-    {
-      "id": "sleek_shot",
-      "name": "Sleek Shot",
-      "description": "+10% projectile speed",
-      "modifiers": { "projectileSpeed": 0.1 },
-      "rarity": 1
-    },
-    {
-      "id": "speed_shot",
-      "name": "Speed Shot",
-      "description": "+20% projectile speed",
-      "modifiers": { "projectileSpeed": 0.2 },
-      "rarity": 4
-    },
-    {
-      "id": "tiny_bullets",
-      "name": "Tiny Bullets",
-      "description": "+15% projectile speed, -10% projectile size",
-      "modifiers": { "projectileSpeed": 0.2, "projectileRadius": -0.1 },
-      "rarity": 3
     },
     {
       "id": "nimble",
@@ -221,23 +515,30 @@
       "rarity": 4
     },
     {
+      "id": "retaliation",
+      "name": "Retaliation",
+      "description": "When hit, damage nearby enemies. Extra copies reach farther.",
+      "combat": { "retaliationRadius": 100, "retaliationDamage": 0.7 },
+      "rarity": 4
+    },
+    {
       "id": "well_read",
       "name": "Well Read",
-      "description": "+10% xp gain",
+      "description": "+10% XP gain",
       "modifiers": { "xpGain": 0.1 },
       "rarity": 2
     },
     {
       "id": "wiseman",
       "name": "Wiseman",
-      "description": "+15% xp gain",
+      "description": "+15% XP gain",
       "modifiers": { "xpGain": 0.15 },
       "rarity": 3
     },
     {
       "id": "scholar",
       "name": "Scholar",
-      "description": "+25% xp gain",
+      "description": "+25% XP gain",
       "modifiers": { "xpGain": 0.25 },
       "rarity": 5
     }

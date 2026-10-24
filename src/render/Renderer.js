@@ -1,4 +1,5 @@
 import { getRarityStyle } from '../config/upgradeRarity.js';
+import { getUpgradeCardLayout } from './upgradeLayout.js';
 
 export class Renderer {
   constructor(ctx, width, height) {
@@ -35,6 +36,60 @@ export class Renderer {
         flashing ? '#ff6b6b' : enemy.outline,
         enemy.rotation || 0,
       );
+      if (!flashing) this._drawStatus(enemy);
+    }
+  }
+
+  _drawStatus(enemy) {
+    const status = enemy.status;
+    if (!status) return;
+    const x = Math.round(enemy.x);
+    const y = Math.round(enemy.y);
+    const r = enemy.radius;
+
+    if (status.burn) {
+      this.ctx.save();
+      this.ctx.globalAlpha = 0.35 + 0.2 * Math.sin(Date.now() / 90);
+      this.ctx.fillStyle = '#e67e22';
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, r * 0.72, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.restore();
+    }
+
+    if (status.slow > 0) {
+      this.ctx.save();
+      this.ctx.globalAlpha = 0.28;
+      this.ctx.fillStyle = '#5dade2';
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, r * 0.85, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.restore();
+    }
+
+    if (status.freeze > 0) {
+      this.ctx.save();
+      this.ctx.strokeStyle = '#d6eaf8';
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, r + 3, 0, Math.PI * 2);
+      this.ctx.stroke();
+      this.ctx.restore();
+    }
+
+    if (status.shock > 0) {
+      this.ctx.save();
+      this.ctx.strokeStyle = '#f7dc6f';
+      this.ctx.lineWidth = 1;
+      const flick = Math.floor(Date.now() / 40) % 4;
+      for (let i = 0; i < 3; i++) {
+        const angle = flick + i * 2.1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, y);
+        this.ctx.lineTo(x + Math.cos(angle) * r, y + Math.sin(angle) * (r * 0.6));
+        this.ctx.stroke();
+      }
+      this.ctx.restore();
     }
   }
 
@@ -76,8 +131,10 @@ export class Renderer {
       if (!p.active) continue;
       const x = Math.round(p.x);
       const y = Math.round(p.y);
-      const r = Math.round(p.radius);
-      this.ctx.fillStyle = '#ecf0f1';
+      const r = Math.max(2, Math.round(p.radius * (p.critFlash > 0 ? 1.75 : 1)));
+      this.ctx.fillStyle = '#111';
+      this.ctx.fillRect(x - r - 1, y - r - 1, r * 2 + 2, r * 2 + 2);
+      this.ctx.fillStyle = p.critFlash > 0 ? '#ffffff' : (p.color || '#ecf0f1');
       this.ctx.fillRect(x - r, y - r, r * 2, r * 2);
     }
   }
@@ -115,6 +172,33 @@ export class Renderer {
       this.ctx.arc(x, y, player.radius, 0, Math.PI * 2);
       this.ctx.fill();
     }
+  }
+
+  _wrapTextLines(text, maxWidth) {
+    const words = String(text).split(' ');
+    const lines = [];
+    let line = '';
+
+    for (const word of words) {
+      const testLine = line ? `${line} ${word}` : word;
+      if (this.ctx.measureText(testLine).width > maxWidth && line) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = testLine;
+      }
+    }
+
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  _drawWrappedText(text, x, y, maxWidth, lineHeight) {
+    const lines = this._wrapTextLines(text, maxWidth);
+    for (let i = 0; i < lines.length; i++) {
+      this.ctx.fillText(lines[i], x, y + i * lineHeight);
+    }
+    return lines.length;
   }
 
   _drawShape(x, y, radius, shape, color, outline, rotation = 0) {
@@ -165,27 +249,22 @@ export class Renderer {
     this.ctx.restore();
   }
 
-  drawUpgradeOverlay(choices, width, height, playerStacks = {}, isSpecialRoll = false, isBossDrop = false) {
+  drawUpgradeOverlay(choices, width, height, playerStacks = {}, isSpecialRoll = false, isBossDrop = false, previewFor = null) {
     this.ctx.fillStyle = 'rgba(0,0,0,0.7)';
     this.ctx.fillRect(0, 0, width, height);
+
+    const layout = getUpgradeCardLayout(choices.length, width, height);
+    const { cardW, cardH, gap, startX, cardY } = layout;
 
     const title = isBossDrop ? 'BOSS REWARD!' : (isSpecialRoll ? 'SPECIAL UPGRADE!' : 'LEVEL UP!');
     this.ctx.fillStyle = isBossDrop ? '#f1c40f' : (isSpecialRoll ? '#e74c3c' : '#5dade2');
     this.ctx.font = 'bold 24px Courier New';
     this.ctx.textAlign = 'center';
-    this.ctx.fillText(title, width / 2, height / 2 - 110);
-
-    const cardW = 200;
-    const cardH = 130;
-    const gap = 20;
-    const totalW = choices.length * cardW + (choices.length - 1) * gap;
-    const startX = (width - totalW) / 2;
-    const cardY = height / 2 - 45;
+    this.ctx.fillText(title, width / 2, cardY - 28);
 
     choices.forEach((choice, i) => {
       const style = getRarityStyle(choice.rarity || 1);
       const cx = startX + i * (cardW + gap);
-      const stacks = playerStacks[choice.id] || 0;
 
       this.ctx.fillStyle = style.bg;
       this.ctx.fillRect(cx, cardY, cardW, cardH);
@@ -193,19 +272,33 @@ export class Renderer {
       this.ctx.lineWidth = 3;
       this.ctx.strokeRect(cx, cardY, cardW, cardH);
 
+      const textPad = 12;
+      const textMaxW = cardW - textPad * 2;
+      const centerX = cx + cardW / 2;
+
       this.ctx.fillStyle = style.text;
       this.ctx.font = 'bold 14px Courier New';
-      this.ctx.fillText(choice.name, cx + cardW / 2, cardY + 28);
+      const nameLines = this._drawWrappedText(choice.name, centerX, cardY + 22, textMaxW, 16);
       this.ctx.font = '10px Courier New';
       this.ctx.fillStyle = style.border;
-      this.ctx.fillText(style.label, cx + cardW / 2, cardY + 44);
+      this.ctx.fillText(style.label, centerX, cardY + 22 + nameLines * 16 + 8);
       this.ctx.font = '12px Courier New';
       this.ctx.fillStyle = '#ccc';
-      this.ctx.fillText(choice.description, cx + cardW / 2, cardY + 68);
-      if (stacks > 0) {
+      const descY = cardY + 22 + nameLines * 16 + 24;
+      const descLines = this._drawWrappedText(choice.description, centerX, descY, textMaxW, 14);
+      const previews = previewFor ? previewFor(choice) : [];
+      let previewY = descY + descLines * 14 + 8;
+      this.ctx.font = '10px Courier New';
+      this.ctx.fillStyle = style.text;
+      for (const line of previews) {
+        if (previewY > cardY + cardH - 10) break;
+        this.ctx.fillText(line, centerX, previewY);
+        previewY += 12;
+      }
+      if (!previews.length && (playerStacks[choice.id] || 0) > 0) {
         this.ctx.fillStyle = style.border;
         this.ctx.font = 'bold 11px Courier New';
-        this.ctx.fillText(`Owned: x${stacks}`, cx + cardW / 2, cardY + 100);
+        this.ctx.fillText(`Owned: x${playerStacks[choice.id]}`, centerX, previewY);
       }
     });
 
@@ -257,6 +350,21 @@ export class Renderer {
       y += 20;
     }
 
+    const build = levelSystem.getBuildSummary?.(player) || [];
+    if (build.length) {
+      y += 8;
+      ctx.fillStyle = '#ecf0f1';
+      ctx.font = 'bold 14px Courier New';
+      ctx.fillText('BUILD', leftX, y);
+      y += 20;
+      ctx.font = '12px Courier New';
+      for (const line of build) {
+        ctx.fillStyle = '#aed6f1';
+        const lineCount = this._drawWrappedText(line, leftX, y, colW, 14);
+        y += lineCount * 14 + 4;
+      }
+    }
+
     ctx.fillStyle = '#ecf0f1';
     ctx.font = 'bold 14px Courier New';
     ctx.fillText('UPGRADES', rightX, startY);
@@ -275,9 +383,9 @@ export class Renderer {
         ctx.fillText(`${upgrade.name} x${stacks}`, rightX, y);
         ctx.fillStyle = '#666';
         ctx.font = '10px Courier New';
-        ctx.fillText(upgrade.description, rightX, y + 14);
+        const descLines = this._drawWrappedText(upgrade.description, rightX, y + 14, colW, 12);
         ctx.font = '12px Courier New';
-        y += 32;
+        y += 14 + descLines * 12 + 10;
       }
     }
 
@@ -318,9 +426,15 @@ export class Renderer {
     this.ctx.textAlign = 'left';
   }
 
-  drawDebug(fps, enemyCount, width) {
+  drawDebug(fps, enemyCount, height) {
     this.ctx.fillStyle = '#0f0';
     this.ctx.font = '12px Courier New';
     this.ctx.fillText(`FPS: ${fps}  Enemies: ${enemyCount}`, 10, height - 10);
+  }
+
+  drawDevHint(height) {
+    this.ctx.fillStyle = '#5dade2';
+    this.ctx.font = '12px Courier New';
+    this.ctx.fillText('DEV: press ` to open panel', 10, height - 10);
   }
 }
