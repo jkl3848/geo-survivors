@@ -10,18 +10,23 @@
   },
   "shapeWeights": {
     "area": {
-      "speed": -0.35,
-      "hp": 0.25,
-      "defense": 0.15
+      "hp": 0.8,
+      "speed": -0.45
     },
     "roundness": {
-      "hp": 0.4,
+      "defense": 2.0,
       "healthRegen": 0.5
     },
     "pointiness": {
-      "attack": 0.45,
-      "attackSpeed": 0.2
+      "attack": 1.0,
+      "attackSpeed": 0.25
     }
+  },
+  "shapeMetrics": {
+    "maxAngle": 120,
+    "minAngle": 25,
+    "scale": 3,
+    "circleRef": 0.92
   },
   "limits": {
     "minBodyPixels": 20,
