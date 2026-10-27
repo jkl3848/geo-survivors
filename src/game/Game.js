@@ -1,5 +1,6 @@
 import { ObjectPool } from "../core/ObjectPool.js";
 import { SpatialHash } from "../core/SpatialHash.js";
+import { wrapPosition } from "../core/Vec2.js";
 import { GameLoop } from "./GameLoop.js";
 import { Input } from "./Input.js";
 import { Player } from "../entities/Player.js";
@@ -11,6 +12,7 @@ import { CombatSystem } from "../systems/CombatSystem.js";
 import { CollisionSystem } from "../systems/CollisionSystem.js";
 import { LevelSystem } from "../systems/LevelSystem.js";
 import { AbilitySystem } from "../systems/AbilitySystem.js";
+import { CharacterAbility } from "../systems/CharacterAbility.js";
 import { Renderer } from "../render/Renderer.js";
 import { VFX } from "../render/VFX.js";
 import { HUD } from "../render/HUD.js";
@@ -65,12 +67,17 @@ export class Game {
     );
     this.combatSystem = new CombatSystem(configs.stats);
     this.collisionSystem = new CollisionSystem(this.spatialHash);
+    this.colorDef =
+      configs.colors?.colors?.find((c) => c.id === characterData.colorId) ||
+      configs.colors?.colors?.[0] ||
+      null;
     this.levelSystem = new LevelSystem(configs.stats.xp, configs.upgrades, {
       isUpgradeUnlocked: (upgrade) => this.meta?.isUpgradeUnlocked(upgrade) !== false,
       choiceCount: this.meta?.getPerk("extra_card") > 0 ? 4 : 3,
       rerollsPerRun: this.meta?.getPerk("reroll") || 0,
       skipsPerRun: this.meta?.getPerk("skip") || 0,
       onUpgradeGranted: () => this._reportMeta(),
+      characterId: characterData.colorId || this.colorDef?.id || null,
     });
     this.vfx = new VFX();
     this.abilitySystem = new AbilitySystem({
@@ -84,6 +91,19 @@ export class Game {
         this.spatialHash.queryRadius(x, y, radius).slice(),
       spawnProjectile: (spec) => this._spawnProjectile(spec),
       onDeath: (enemy) => this._onEnemyDeath(enemy),
+    });
+    this.characterAbility = new CharacterAbility({
+      color: this.colorDef,
+      player: this.player,
+      abilitySystem: this.abilitySystem,
+      vfx: this.vfx,
+      input: this.input,
+      getEnemies: () => this.enemyPool.getActive(),
+      getXpOrbs: () => this.xpPool.getActive(),
+      queryRadius: (x, y, radius) =>
+        this.spatialHash.queryRadius(x, y, radius).slice(),
+      spawnProjectile: (spec) => this._spawnProjectile(spec),
+      getAimAngle: () => this.input.getAimAngle(this.player.x, this.player.y),
     });
 
     this.renderer = null;
@@ -140,6 +160,7 @@ export class Game {
     } else if (this.state === "paused") {
       this.state = "playing";
       this.loop.setPaused(false);
+      this.input.clearPressed();
       e.preventDefault();
     }
   }
@@ -164,6 +185,7 @@ export class Game {
     this.devPanel.hide();
     this.state = "playing";
     this.loop.setPaused(false);
+    this.input.clearPressed();
   }
 
   async start() {
@@ -187,6 +209,7 @@ export class Game {
     this.spawnSystem.reset();
     this.levelSystem.reset();
     this.abilitySystem.reset();
+    this.characterAbility.reset();
     this.vfx.clear();
 
     this.renderer = new Renderer(this.ctx, width, height);
@@ -254,6 +277,7 @@ export class Game {
     this.levelSystem.applyUpgrade(index, this.player);
     this.state = "playing";
     this.loop.setPaused(false);
+    this.input.clearPressed();
     this.music.playSfx("C5", 0.15);
   }
 
@@ -285,6 +309,7 @@ export class Game {
       if (this.levelSystem.skip(this.player)) {
         this.state = "playing";
         this.loop.setPaused(false);
+        this.input.clearPressed();
         this.music.playSfx("C5", 0.1);
       }
       return;
@@ -448,6 +473,13 @@ export class Game {
 
     this.vfx.update(dt);
     this.player.update(dt, this.input, this.canvas.width, this.canvas.height);
+
+    if (this.input.wasPressed(" ")) {
+      this.characterAbility.tryActivate();
+    }
+    this.characterAbility.update(dt);
+    wrapPosition(this.player, this.canvas.width, this.canvas.height);
+
     this.spawnSystem.update(dt, this.canvas.width, this.canvas.height);
     this._reportProgressMarkers();
 
@@ -525,7 +557,7 @@ export class Game {
       }
     }
 
-    if (this.player.contactCooldown <= 0) {
+    if (this.player.contactCooldown <= 0 && !this.player.isInvulnerable()) {
       const touching = this.collisionSystem.checkPlayerEnemyCollisions(
         this.player,
         enemies,
@@ -634,6 +666,7 @@ export class Game {
       this._runBossKills += 1;
       this._bossTypes.push(enemy.typeId);
     }
+    this.characterAbility.onEnemyKilled();
     this._reportMeta(bossType ? { bossType } : {});
     const wasHexagon = enemy.typeId === "hexagon";
     const wasBossSquare = enemy.typeId === "boss_square";
@@ -657,6 +690,7 @@ export class Game {
       this.loop.setPaused(true);
     }
 
+    const xpMul = 1 + (this.characterAbility.getXpBonus() || 0);
     const orbCount = wasFinalBoss ? 5 : wasBossSquare ? 3 : 1;
     for (let i = 0; i < orbCount; i++) {
       const angle = ((Math.PI * 2) / orbCount) * i;
@@ -665,7 +699,7 @@ export class Game {
       orb.init(
         deathX + Math.cos(angle) * offset,
         deathY + Math.sin(angle) * offset,
-        Math.floor(deathXp / orbCount),
+        Math.max(1, Math.floor((deathXp * xpMul) / orbCount)),
       );
     }
   }
@@ -694,6 +728,7 @@ export class Game {
 
     this.renderer.drawXPOrbs(xpOrbs);
     this.renderer.drawEnemies(enemies);
+    this.characterAbility.draw(this.ctx);
     this.renderer.drawProjectiles(projectiles);
     this.renderer.drawPlayer(this.player);
     this.vfx.draw(this.ctx);
@@ -704,6 +739,7 @@ export class Game {
       this.spawnSystem.getEnemyLevel(),
       this.levelSystem,
       this.spawnSystem.isTimerComplete(),
+      this.characterAbility.getHudState(),
     );
 
     const activeBoss = this._getActiveBoss();

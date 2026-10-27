@@ -10,7 +10,7 @@ How long can you survive?
 
 Draw your own character!
 
-Stats are customized based on your characters shape and color, giving you infinite build possibilties.
+Stats come from your character's shape. Each color grants a unique spacebar ability with its own upgrade path.
 
 ## Contributing
 

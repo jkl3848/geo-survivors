@@ -91,6 +91,26 @@ export class Renderer {
       }
       this.ctx.restore();
     }
+
+    if ((status.stun || 0) > 0) {
+      this.ctx.save();
+      this.ctx.strokeStyle = '#95a5a6';
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, r + 2, 0, Math.PI * 2);
+      this.ctx.stroke();
+      this.ctx.restore();
+    }
+
+    if ((status.charm || 0) > 0) {
+      this.ctx.save();
+      this.ctx.globalAlpha = 0.4 + 0.15 * Math.sin(Date.now() / 100);
+      this.ctx.fillStyle = '#e84393';
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, r * 0.8, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.restore();
+    }
   }
 
   drawBossHealthBar(boss, width) {

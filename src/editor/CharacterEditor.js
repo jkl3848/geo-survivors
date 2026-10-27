@@ -2,7 +2,6 @@ import {
   analyzeShape,
   createPixelArtCanvas,
   processShape,
-  applyColorTraits,
 } from './ShapeAnalyzer.js';
 import { MetaMenu } from '../meta/MetaMenu.js';
 
@@ -92,7 +91,7 @@ export class CharacterEditor {
     this.colorGrid.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;';
     colorSection.appendChild(this.colorGrid);
     this.colorHint = document.createElement('p');
-    this.colorHint.style.cssText = 'color:#888;font-size:10px;margin-top:6px;min-height:28px;';
+    this.colorHint.style.cssText = 'color:#888;font-size:10px;margin-top:6px;min-height:36px;max-width:280px;line-height:1.35;';
     colorSection.appendChild(this.colorHint);
     side.appendChild(colorSection);
 
@@ -279,11 +278,12 @@ export class CharacterEditor {
   _updateColorHint() {
     const c = this.selectedColor;
     if (!c) return;
-    const traits = Object.entries(c.traits || {});
-    const traitText = traits.length
-      ? traits.map(([k, v]) => `${k} +${(v * 100).toFixed(0)}%`).join(', ')
-      : 'No bonus';
-    this.colorHint.textContent = `${c.name}: ${traitText}`;
+    const ability = c.ability;
+    if (ability) {
+      this.colorHint.textContent = `${c.name}: ${ability.name} — ${ability.description}`;
+    } else {
+      this.colorHint.textContent = `${c.name}: No special ability`;
+    }
   }
 
   _makeButton(text, color) {
@@ -408,9 +408,7 @@ export class CharacterEditor {
       }
     }
     if (!hasPixel) return null;
-    const analysis = analyzeShape(body, GRID_SIZE, GRID_SIZE, this.statsConfig);
-    analysis.stats = applyColorTraits(analysis.stats, this.selectedColor?.traits);
-    return analysis;
+    return analyzeShape(body, GRID_SIZE, GRID_SIZE, this.statsConfig);
   }
 
   _updateStats() {

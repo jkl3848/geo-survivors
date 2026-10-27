@@ -66,6 +66,10 @@ export class Input {
     return false;
   }
 
+  clearPressed() {
+    this.justPressed.clear();
+  }
+
   destroy() {
     window.removeEventListener('keydown', this._onKeyDown);
     window.removeEventListener('keyup', this._onKeyUp);

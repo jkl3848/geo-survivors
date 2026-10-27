@@ -5,7 +5,13 @@
       "name": "Azure",
       "hex": "#5dade2",
       "unlockedByDefault": true,
-      "traits": {}
+      "ability": {
+        "id": "barrier",
+        "name": "Barrier",
+        "description": "Block all contact damage for 2s.",
+        "cooldown": 14,
+        "params": { "duration": 2, "radius": 42, "repelDamage": 0, "knockback": 0 }
+      }
     },
     {
       "id": "crimson",
@@ -13,7 +19,19 @@
       "hex": "#e74c3c",
       "unlockedByDefault": false,
       "unlockAchievement": "survive_3_min",
-      "traits": { "attack": 0.08 }
+      "ability": {
+        "id": "bloodlust",
+        "name": "Bloodlust",
+        "description": "Spend HP to gain attack speed and damage for a short burst.",
+        "cooldown": 16,
+        "params": {
+          "duration": 4,
+          "hpCost": 0.1,
+          "attackSpeedBonus": 0.35,
+          "damageBonus": 0.2,
+          "leech": 0
+        }
+      }
     },
     {
       "id": "emerald",
@@ -21,7 +39,19 @@
       "hex": "#2ecc71",
       "unlockedByDefault": false,
       "unlockAchievement": "survive_5_min",
-      "traits": { "healthRegen": 0.15 }
+      "ability": {
+        "id": "overgrowth",
+        "name": "Overgrowth",
+        "description": "Grow a healing grove that slows enemies.",
+        "cooldown": 20,
+        "params": {
+          "duration": 5,
+          "radius": 90,
+          "healPerSec": 0.02,
+          "slow": 0.25,
+          "thorns": 0
+        }
+      }
     },
     {
       "id": "gold",
@@ -29,7 +59,18 @@
       "hex": "#f1c40f",
       "unlockedByDefault": false,
       "unlockAchievement": "win",
-      "traits": { "attackSpeed": 0.1, "speed": 0.05 }
+      "ability": {
+        "id": "jackpot",
+        "name": "Jackpot",
+        "description": "Pull all XP orbs and briefly boost XP from kills.",
+        "cooldown": 25,
+        "params": {
+          "duration": 5,
+          "xpBonus": 0.5,
+          "coins": 0,
+          "coinDamage": 1
+        }
+      }
     },
     {
       "id": "violet",
@@ -37,7 +78,19 @@
       "hex": "#9b59b6",
       "unlockedByDefault": false,
       "unlockAchievement": "survive_8_min",
-      "traits": { "defense": 0.12 }
+      "ability": {
+        "id": "gravity_well",
+        "name": "Gravity Well",
+        "description": "Throw a singularity that pulls and damages enemies.",
+        "cooldown": 15,
+        "params": {
+          "duration": 2.5,
+          "radius": 130,
+          "pull": 140,
+          "damagePerSec": 0.3,
+          "collapseDamage": 0
+        }
+      }
     },
     {
       "id": "obsidian",
@@ -45,7 +98,20 @@
       "hex": "#566573",
       "unlockedByDefault": false,
       "unlockAchievement": "reach_level_10",
-      "traits": { "hp": 0.15, "defense": 0.08 }
+      "ability": {
+        "id": "tremor",
+        "name": "Tremor",
+        "description": "Slam the ground to knock back and stun nearby enemies.",
+        "cooldown": 12,
+        "params": {
+          "radius": 130,
+          "stun": 0.6,
+          "damage": 1,
+          "knockback": 220,
+          "aftershock": 0,
+          "aftershockDelay": 0.5
+        }
+      }
     },
     {
       "id": "ivory",
@@ -53,7 +119,18 @@
       "hex": "#f4f6f7",
       "unlockedByDefault": false,
       "unlockAchievement": "boss_square",
-      "traits": { "speed": 0.08 }
+      "ability": {
+        "id": "phase_dash",
+        "name": "Phase Dash",
+        "description": "Dash through enemies while invulnerable.",
+        "cooldown": 6,
+        "params": {
+          "distance": 150,
+          "charges": 1,
+          "dashDamage": 0,
+          "dashDuration": 0.18
+        }
+      }
     },
     {
       "id": "amber",
@@ -61,7 +138,20 @@
       "hex": "#e67e22",
       "unlockedByDefault": false,
       "unlockAchievement": "reach_level_20",
-      "traits": { "attack": 0.1 }
+      "ability": {
+        "id": "sentry",
+        "name": "Sentry",
+        "description": "Place a turret that fires at nearby enemies.",
+        "cooldown": 18,
+        "params": {
+          "duration": 6,
+          "fireRate": 2,
+          "shots": 1,
+          "damage": 0.5,
+          "range": 280,
+          "smart": 0
+        }
+      }
     },
     {
       "id": "rose",
@@ -69,7 +159,18 @@
       "hex": "#e84393",
       "unlockedByDefault": false,
       "unlockAchievement": "total_kills_1000",
-      "traits": { "healthRegen": 0.2 }
+      "ability": {
+        "id": "heartbreak",
+        "name": "Heartbreak",
+        "description": "Charm nearby enemies so they flee from you.",
+        "cooldown": 16,
+        "params": {
+          "duration": 2,
+          "radius": 140,
+          "heartache": 0,
+          "healOnCast": 0
+        }
+      }
     },
     {
       "id": "cobalt",
@@ -77,7 +178,18 @@
       "hex": "#1abc9c",
       "unlockedByDefault": false,
       "unlockAchievement": "path_focus",
-      "traits": { "attackSpeed": 0.08 }
+      "ability": {
+        "id": "rewind",
+        "name": "Rewind",
+        "description": "Snap back to where you were 3 seconds ago and restore that HP.",
+        "cooldown": 22,
+        "params": {
+          "lookback": 3,
+          "echoDamage": 0,
+          "echoRadius": 100,
+          "paradox": 0
+        }
+      }
     },
     {
       "id": "solar",
@@ -85,7 +197,22 @@
       "hex": "#ff7675",
       "unlockedByDefault": false,
       "unlockAchievement": "hard_win",
-      "traits": { "attack": 0.06, "defense": 0.06 }
+      "ability": {
+        "id": "solar_flare",
+        "name": "Solar Flare",
+        "description": "Fire a beam toward the cursor after a short windup.",
+        "cooldown": 15,
+        "params": {
+          "windup": 0.4,
+          "duration": 1.2,
+          "length": 420,
+          "width": 28,
+          "tickRate": 0.15,
+          "damage": 0.6,
+          "sunspot": 0,
+          "moveSlow": 0.5
+        }
+      }
     }
   ]
 }

@@ -13,6 +13,7 @@ export class LevelSystem {
     this.rerollsPerRun = options.rerollsPerRun || 0;
     this.skipsPerRun = options.skipsPerRun || 0;
     this.onUpgradeGranted = options.onUpgradeGranted || null;
+    this.characterId = options.characterId || null;
     this.level = 1;
     this.xp = 0;
     this.xpToNext = xpConfig.baseToLevel;
@@ -44,6 +45,12 @@ export class LevelSystem {
     this.skipsLeft = this.skipsPerRun;
   }
 
+  _characterUpgrades() {
+    const pool = this.upgradesConfig.characterPool || [];
+    if (!this.characterId) return [];
+    return pool.filter((upgrade) => upgrade.character === this.characterId);
+  }
+
   _allUpgradePools() {
     const pools = [this.upgradesConfig.pool];
     if (this.upgradesConfig.specialPool?.length) {
@@ -52,7 +59,13 @@ export class LevelSystem {
     if (this.upgradesConfig.bossDropPool?.length) {
       pools.push(this.upgradesConfig.bossDropPool);
     }
+    const character = this._characterUpgrades();
+    if (character.length) pools.push(character);
     return pools.flat();
+  }
+
+  _basePoolWithCharacter() {
+    return [...(this.upgradesConfig.pool || []), ...this._characterUpgrades()];
   }
 
   _isSpecialLevel() {
@@ -78,11 +91,11 @@ export class LevelSystem {
     this.isSpecialRoll = this._isSpecialLevel();
     let pool = this.isSpecialRoll
       ? (this.upgradesConfig.specialPool || [])
-      : this.upgradesConfig.pool;
+      : this._basePoolWithCharacter();
 
     if (!this._eligible(pool).length) {
       this.isSpecialRoll = false;
-      pool = this.upgradesConfig.pool;
+      pool = this._basePoolWithCharacter();
     }
 
     this.rollUpgradesFromPool(pool);
@@ -139,7 +152,11 @@ export class LevelSystem {
   }
 
   _eligible(pool) {
-    const unlocked = this._uniquePool(pool).filter((upgrade) => this.isUpgradeUnlocked(upgrade));
+    const forCharacter = this._uniquePool(pool).filter((upgrade) => {
+      if (!upgrade.character) return true;
+      return upgrade.character === this.characterId;
+    });
+    const unlocked = forCharacter.filter((upgrade) => this.isUpgradeUnlocked(upgrade));
     const underCap = unlocked.filter((upgrade) => {
       if (upgrade.maxStacks == null) return true;
       return (this.playerStacks[upgrade.id] || 0) < upgrade.maxStacks;
@@ -332,6 +349,23 @@ export class LevelSystem {
       }
     }
 
+    if (upgrade.ability && player) {
+      for (const [key, value] of Object.entries(upgrade.ability)) {
+        if (typeof value !== "number") continue;
+        const current = player.abilityMods?.[key] || 0;
+        const next = current + value;
+        const label = COMBAT_LABELS[key] || key;
+        if (owned > 0 || current !== 0) {
+          lines.push(
+            `${label} ${formatCombatValue(key, current)} -> ${formatCombatValue(key, next)}`,
+          );
+        } else {
+          const sign = value > 0 ? "+" : "";
+          lines.push(`${label} ${sign}${formatCombatValue(key, value)}`);
+        }
+      }
+    }
+
     if (upgrade.modifiers && player && upgrade.modifierMode !== "instant") {
       const mode = upgrade.modifierMode || this.upgradesConfig.modifierMode;
       for (const [key, value] of Object.entries(upgrade.modifiers)) {
@@ -357,6 +391,10 @@ export class LevelSystem {
 
   getBuildSummary(player) {
     const lines = [];
+    const abilityCount = this.tagCounts.ability || 0;
+    if (abilityCount > 0) {
+      lines.push(`Ability upgrades x${abilityCount}`);
+    }
     const names = {
       lightning: "Lightning",
       fire: "Fire",
@@ -369,7 +407,7 @@ export class LevelSystem {
       if (count > 0) parts.push(`${names[tag]} x${count}`);
     }
     if (parts.length) lines.push(parts.join("   "));
-    else lines.push("No path yet");
+    else if (!abilityCount) lines.push("No path yet");
 
     const combat = player?.combat || {};
     lines.push(

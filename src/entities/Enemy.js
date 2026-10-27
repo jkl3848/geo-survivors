@@ -44,12 +44,16 @@ export class Enemy {
       slowAmount: 0,
       freeze: 0,
       shock: 0,
+      stun: 0,
+      charm: 0,
     };
+    this.kbVx = 0;
+    this.kbVy = 0;
   }
 
   getMoveScale() {
     if (!this.status) return 1;
-    if (this.status.freeze > 0) return 0;
+    if (this.status.freeze > 0 || (this.status.stun || 0) > 0) return 0;
     if (this.status.slow > 0) {
       return Math.max(0.15, 1 - (this.status.slowAmount || 0));
     }
@@ -129,6 +133,8 @@ export class Enemy {
   update(dt, playerX, playerY, worldW, worldH, context = {}) {
     if (!this.active) return;
 
+    this._applyKnockback(dt, worldW, worldH);
+
     if (this.launched) {
       this._updateLaunched(dt, worldW, worldH);
     } else if (this.behavior === 'boss_square') {
@@ -144,12 +150,30 @@ export class Enemy {
     }
   }
 
+  _applyKnockback(dt, worldW, worldH) {
+    if (!this.kbVx && !this.kbVy) return;
+    this.x += this.kbVx * dt;
+    this.y += this.kbVy * dt;
+    const decay = Math.max(0, 1 - 6 * dt);
+    this.kbVx *= decay;
+    this.kbVy *= decay;
+    if (Math.hypot(this.kbVx, this.kbVy) < 8) {
+      this.kbVx = 0;
+      this.kbVy = 0;
+    }
+    wrapPosition(this, worldW, worldH);
+  }
+
   _updateChase(dt, playerX, playerY, worldW, worldH) {
     const scale = this.getMoveScale();
     if (scale <= 0) return;
     dt *= scale;
-    const dx = playerX - this.x;
-    const dy = playerY - this.y;
+    let dx = playerX - this.x;
+    let dy = playerY - this.y;
+    if ((this.status?.charm || 0) > 0) {
+      dx = -dx;
+      dy = -dy;
+    }
     const dist = Math.hypot(dx, dy);
     if (dist > 0) {
       this.x += (dx / dist) * this.speed * dt;
