@@ -1,198 +1,215 @@
 {
-  "bpm": 140,
+  "bpm": 120,
   "tracks": [
     {
       "name": "main",
+      "bpm": 120,
       "loop": true,
-      "notes": [
-        { "pitch": "C4", "duration": 0.25, "wave": "square" },
-        { "pitch": "E4", "duration": 0.25, "wave": "square" },
-        { "pitch": "G4", "duration": 0.25, "wave": "square" },
-        { "pitch": "C5", "duration": 0.25, "wave": "square" },
-        { "pitch": "G4", "duration": 0.25, "wave": "square" },
-        { "pitch": "E4", "duration": 0.25, "wave": "square" },
-        { "pitch": "D4", "duration": 0.25, "wave": "square" },
-        { "pitch": "G4", "duration": 0.25, "wave": "square" },
-    
-        { "pitch": "A3", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "C4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "E4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "A4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "E4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "C4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "B3", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "E4", "duration": 0.25, "wave": "triangle" },
-    
-        { "pitch": "G3", "duration": 0.25, "wave": "square" },
-        { "pitch": "B3", "duration": 0.25, "wave": "square" },
-        { "pitch": "D4", "duration": 0.25, "wave": "square" },
-        { "pitch": "G4", "duration": 0.25, "wave": "square" },
-        { "pitch": "B4", "duration": 0.25, "wave": "square" },
-        { "pitch": "G4", "duration": 0.25, "wave": "square" },
-        { "pitch": "D4", "duration": 0.25, "wave": "square" },
-        { "pitch": "B3", "duration": 0.25, "wave": "square" },
-    
-        { "pitch": "F4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "E4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "D4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "C4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "D4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "E4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "G4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "A4", "duration": 0.25, "wave": "triangle" },
-    
-        { "pitch": "C5", "duration": 0.5, "wave": "square" },
-        { "pitch": "B4", "duration": 0.25, "wave": "square" },
-        { "pitch": "A4", "duration": 0.25, "wave": "square" },
-        { "pitch": "G4", "duration": 0.5, "wave": "square" },
-        { "pitch": "E4", "duration": 0.25, "wave": "square" },
-        { "pitch": "G4", "duration": 0.25, "wave": "square" },
-    
-        { "pitch": "D5", "duration": 0.5, "wave": "square" },
-        { "pitch": "B4", "duration": 0.25, "wave": "square" },
-        { "pitch": "G4", "duration": 0.25, "wave": "square" },
-        { "pitch": "D4", "duration": 0.5, "wave": "square" },
-        { "pitch": "G4", "duration": 0.25, "wave": "square" },
-        { "pitch": "B4", "duration": 0.25, "wave": "square" },
-    
-        { "pitch": "E5", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "D5", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "C5", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "A4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "G4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "A4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "C5", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "D5", "duration": 0.25, "wave": "triangle" },
-    
-        { "pitch": "G4", "duration": 0.5, "wave": "square" },
-        { "pitch": "E4", "duration": 0.25, "wave": "square" },
-        { "pitch": "C4", "duration": 0.25, "wave": "square" },
-        { "pitch": "D4", "duration": 0.5, "wave": "square" },
-        { "pitch": "E4", "duration": 0.25, "wave": "square" },
-        { "pitch": "G4", "duration": 0.25, "wave": "square" },
-        { "pitch": "C5", "duration": 1.0, "wave": "square" }
+      "patterns": {
+        "leadA": "E5:6 D5:2 C5:4 B4:2 C5:2 | A4:6 C5:2 F5:4 E5:2 C5:2 | E5:4 G5:4 E5:2 D5:2 C5:4 | D5:8 B4:4 G4:4 | E5:6 D5:2 C5:4 B4:2 C5:2 | A4:6 C5:2 F5:4 A5:4 | G5:6 F5:2 E5:4 D5:2 C5:2 | D5:6 E5:2 D5:4 B4:4",
+        "leadA2": "E5:2 A5:2 E5:2 C5:2 E5:4 D5:2 C5:2 | C5:4 A4:2 C5:2 F5:6 E5:2 | E5:4 G5:2 E5:2 C5:4 E5:4 | B4:4 D5:4 G5:8 | A5:6 G5:2 E5:4 C5:4 | F5:6 E5:2 C5:4 A4:4 | G4:2 C5:2 E5:2 G5:2 E5:4 C5:4 | D5:12 r:4",
+        "leadB": "C5:8 A4:4 C5:4 | D5:8 B4:4 D5:4 | E5:6 D5:2 B4:8 | C5:6 B4:2 A4:8 | A4:4 C5:4 F5:6 E5:2 | G5:6 F5:2 D5:4 B4:4 | C5:4 E5:4 G5:8 | B4:4 E5:4 G#5:8",
+        "leadA3": "A5:6 G5:2 E5:4 D5:2 C5:2 | A4:6 C5:2 F5:4 E5:2 C5:2 | E5:4 G5:4 E5:2 D5:2 C5:4 | D5:8 B4:4 G4:4 | A4:4 C5:4 F5:4 A5:4 | G5:6 F5:2 D5:4 B4:4 | G#4:4 B4:4 E5:4 G#5:4 | B4:8 G#4:4 B4:2 D5:2",
+
+        "arpAm": "A3:2 C4:2 E4:2 C4:2 A3:2 C4:2 E4:2 C4:2",
+        "arpF": "A3:2 C4:2 F4:2 C4:2 A3:2 C4:2 F4:2 C4:2",
+        "arpC": "G3:2 C4:2 E4:2 C4:2 G3:2 C4:2 E4:2 C4:2",
+        "arpG": "G3:2 B3:2 D4:2 B3:2 G3:2 B3:2 D4:2 B3:2",
+        "arpEm": "G3:2 B3:2 E4:2 B3:2 G3:2 B3:2 E4:2 B3:2",
+        "arpE": "G#3:2 B3:2 E4:2 B3:2 G#3:2 B3:2 E4:2 B3:2",
+
+        "bassAm": "A2:3 A2:1 A3:2 A2:2 E3:2 A2:2 A3:2 E3:2",
+        "bassF": "F2:3 F2:1 F3:2 F2:2 C3:2 F2:2 F3:2 C3:2",
+        "bassC": "C3:3 C3:1 C4:2 C3:2 G2:2 C3:2 C4:2 G2:2",
+        "bassG": "G2:3 G2:1 G3:2 G2:2 D3:2 G2:2 G3:2 D3:2",
+        "bassE": "E2:3 E2:1 E3:2 E2:2 B2:2 E2:2 E3:2 B2:2",
+        "bassSoftF": "F2:6 F2:2 C3:4 F3:4",
+        "bassSoftG": "G2:6 G2:2 D3:4 G3:4",
+        "bassSoftEm": "E2:6 E2:2 B2:4 E3:4",
+        "bassSoftAm": "A2:6 A2:2 E3:4 A3:4",
+        "bassSoftC": "C3:6 C3:2 G2:4 C3:4",
+
+        "beat": "k:2 h:2 s:2 h:2 k:2 k:2 s:2 h:2",
+        "beatLight": "k:4 h:2 h:2 s:4 h:2 h:2",
+        "fillLight": "k:2 h:2 s:2 h:2 k:2 h:2 s:1 s:1 s:2",
+        "fill": "k:2 h:2 s:2 h:2 s:1 s:1 s:2 s:1 s:1 s:2"
+      },
+      "channels": [
+        {
+          "name": "lead",
+          "wave": "pulse",
+          "duty": 0.25,
+          "volume": 0.45,
+          "vibrato": true,
+          "sequence": ["leadA", "leadA2", "leadB", "leadA3"]
+        },
+        {
+          "name": "arp",
+          "wave": "pulse",
+          "duty": 0.125,
+          "volume": 0.2,
+          "gate": 0.6,
+          "sequence": [
+            "arpAm", "arpF", "arpC", "arpG", "arpAm", "arpF", "arpC", "arpG",
+            "arpAm", "arpF", "arpC", "arpG", "arpAm", "arpF", "arpC", "arpG",
+            "arpF", "arpG", "arpEm", "arpAm", "arpF", "arpG", "arpC", "arpE",
+            "arpAm", "arpF", "arpC", "arpG", "arpF", "arpG", "arpE", "arpE"
+          ]
+        },
+        {
+          "name": "bass",
+          "wave": "triangle",
+          "volume": 0.8,
+          "gate": 0.85,
+          "sustain": 0.9,
+          "sequence": [
+            "bassAm", "bassF", "bassC", "bassG", "bassAm", "bassF", "bassC", "bassG",
+            "bassAm", "bassF", "bassC", "bassG", "bassAm", "bassF", "bassC", "bassG",
+            "bassSoftF", "bassSoftG", "bassSoftEm", "bassSoftAm", "bassSoftF", "bassSoftG", "bassSoftC", "bassE",
+            "bassAm", "bassF", "bassC", "bassG", "bassF", "bassG", "bassE", "bassE"
+          ]
+        },
+        {
+          "name": "drums",
+          "wave": "noise",
+          "volume": 0.4,
+          "sequence": [
+            "beat", "beat", "beat", "beat", "beat", "beat", "beat", "fillLight",
+            "beat", "beat", "beat", "beat", "beat", "beat", "beat", "fill",
+            "beatLight", "beatLight", "beatLight", "beatLight", "beatLight", "beatLight", "beatLight", "fill",
+            "beat", "beat", "beat", "beat", "beat", "beat", "beat", "fill"
+          ]
+        }
       ]
     },
     {
       "name": "boss",
+      "bpm": 150,
       "loop": true,
-      "notes": [
-        { "pitch": "A3", "duration": 0.125, "wave": "square" },
-        { "pitch": "E4", "duration": 0.125, "wave": "square" },
-        { "pitch": "A4", "duration": 0.125, "wave": "square" },
-        { "pitch": "E4", "duration": 0.125, "wave": "square" },
-    
-        { "pitch": "G4", "duration": 0.125, "wave": "square" },
-        { "pitch": "E4", "duration": 0.125, "wave": "square" },
-        { "pitch": "D4", "duration": 0.125, "wave": "square" },
-        { "pitch": "E4", "duration": 0.125, "wave": "square" },
-    
-        { "pitch": "A3", "duration": 0.125, "wave": "square" },
-        { "pitch": "E4", "duration": 0.125, "wave": "square" },
-        { "pitch": "A4", "duration": 0.125, "wave": "square" },
-        { "pitch": "C5", "duration": 0.125, "wave": "square" },
-    
-        { "pitch": "B4", "duration": 0.125, "wave": "square" },
-        { "pitch": "A4", "duration": 0.125, "wave": "square" },
-        { "pitch": "G4", "duration": 0.125, "wave": "square" },
-        { "pitch": "E4", "duration": 0.125, "wave": "square" },
-    
-        { "pitch": "F4", "duration": 0.125, "wave": "triangle" },
-        { "pitch": "A4", "duration": 0.125, "wave": "triangle" },
-        { "pitch": "C5", "duration": 0.125, "wave": "triangle" },
-        { "pitch": "A4", "duration": 0.125, "wave": "triangle" },
-    
-        { "pitch": "E4", "duration": 0.125, "wave": "triangle" },
-        { "pitch": "G4", "duration": 0.125, "wave": "triangle" },
-        { "pitch": "B4", "duration": 0.125, "wave": "triangle" },
-        { "pitch": "G4", "duration": 0.125, "wave": "triangle" },
-    
-        { "pitch": "D4", "duration": 0.125, "wave": "square" },
-        { "pitch": "A4", "duration": 0.125, "wave": "square" },
-        { "pitch": "D5", "duration": 0.125, "wave": "square" },
-        { "pitch": "A4", "duration": 0.125, "wave": "square" },
-    
-        { "pitch": "C5", "duration": 0.125, "wave": "square" },
-        { "pitch": "A4", "duration": 0.125, "wave": "square" },
-        { "pitch": "G4", "duration": 0.125, "wave": "square" },
-        { "pitch": "E4", "duration": 0.125, "wave": "square" },
-    
-        { "pitch": "A4", "duration": 0.25, "wave": "square" },
-        { "pitch": "C5", "duration": 0.25, "wave": "square" },
-        { "pitch": "E5", "duration": 0.25, "wave": "square" },
-        { "pitch": "G5", "duration": 0.25, "wave": "square" },
-    
-        { "pitch": "F5", "duration": 0.125, "wave": "triangle" },
-        { "pitch": "E5", "duration": 0.125, "wave": "triangle" },
-        { "pitch": "D5", "duration": 0.125, "wave": "triangle" },
-        { "pitch": "C5", "duration": 0.125, "wave": "triangle" },
-    
-        { "pitch": "B4", "duration": 0.125, "wave": "triangle" },
-        { "pitch": "A4", "duration": 0.125, "wave": "triangle" },
-        { "pitch": "G4", "duration": 0.125, "wave": "triangle" },
-        { "pitch": "E4", "duration": 0.125, "wave": "triangle" },
-    
-        { "pitch": "A3", "duration": 0.25, "wave": "square" },
-        { "pitch": "E4", "duration": 0.25, "wave": "square" },
-        { "pitch": "A4", "duration": 0.25, "wave": "square" },
-        { "pitch": "E5", "duration": 0.25, "wave": "square" },
-    
-        { "pitch": "D5", "duration": 0.25, "wave": "square" },
-        { "pitch": "C5", "duration": 0.25, "wave": "square" },
-        { "pitch": "B4", "duration": 0.25, "wave": "square" },
-        { "pitch": "A4", "duration": 0.5, "wave": "square" }
+      "patterns": {
+        "leadA": "E5:4 B4:4 E5:2 F#5:2 G5:4 | G5:6 E5:2 C5:4 E5:4 | A5:6 F#5:2 D5:4 F#5:4 | D#5:8 F#5:4 B4:4 | E5:2 G5:2 B5:4 A5:2 G5:2 F#5:2 E5:2 | G5:4 E5:2 C5:2 E5:4 G5:4 | F#5:4 A5:4 D5:2 E5:2 F#5:4 | D#5:6 B4:2 F#5:8",
+        "leadB": "G5:12 E5:4 | F#5:12 A5:4 | B5:8 G5:4 E5:4 | G5:4 F#5:4 E5:4 B4:4 | C5:4 E5:4 G5:6 E5:2 | D5:4 F#5:4 A5:6 F#5:2 | B4:4 D#5:4 F#5:4 A5:4 | F#5:6 E5:2 D#5:8",
+
+        "arpEm": "E4:1 G4:1 B4:1 G4:1 E4:1 G4:1 B4:1 G4:1 E4:1 G4:1 B4:1 G4:1 E4:1 G4:1 B4:1 G4:1",
+        "arpC": "C4:1 E4:1 G4:1 E4:1 C4:1 E4:1 G4:1 E4:1 C4:1 E4:1 G4:1 E4:1 C4:1 E4:1 G4:1 E4:1",
+        "arpD": "D4:1 F#4:1 A4:1 F#4:1 D4:1 F#4:1 A4:1 F#4:1 D4:1 F#4:1 A4:1 F#4:1 D4:1 F#4:1 A4:1 F#4:1",
+        "arpB": "B3:1 D#4:1 F#4:1 D#4:1 B3:1 D#4:1 F#4:1 D#4:1 B3:1 D#4:1 F#4:1 D#4:1 B3:1 D#4:1 F#4:1 D#4:1",
+
+        "bassEm": "E2:2 E3:2 E2:2 E3:2 E2:2 E3:2 E2:2 E3:2",
+        "bassC": "C2:2 C3:2 C2:2 C3:2 C2:2 C3:2 C2:2 C3:2",
+        "bassD": "D2:2 D3:2 D2:2 D3:2 D2:2 D3:2 D2:2 D3:2",
+        "bassB": "B1:2 B2:2 B1:2 B2:2 B1:2 B2:2 B1:2 B2:2",
+
+        "beat": "k:2 h:2 s:2 h:2 k:2 k:2 s:2 h:1 h:1",
+        "fill": "k:2 h:2 s:2 h:2 s:1 s:1 s:1 s:1 s:2 s:2"
+      },
+      "channels": [
+        {
+          "name": "lead",
+          "wave": "pulse",
+          "duty": 0.25,
+          "volume": 0.42,
+          "vibrato": true,
+          "sequence": ["leadA", "leadB"]
+        },
+        {
+          "name": "arp",
+          "wave": "pulse",
+          "duty": 0.125,
+          "volume": 0.16,
+          "gate": 0.7,
+          "sequence": [
+            "arpEm", "arpC", "arpD", "arpB", "arpEm", "arpC", "arpD", "arpB",
+            "arpC", "arpD", "arpEm", "arpEm", "arpC", "arpD", "arpB", "arpB"
+          ]
+        },
+        {
+          "name": "bass",
+          "wave": "triangle",
+          "volume": 0.8,
+          "gate": 0.8,
+          "sustain": 0.9,
+          "sequence": [
+            "bassEm", "bassC", "bassD", "bassB", "bassEm", "bassC", "bassD", "bassB",
+            "bassC", "bassD", "bassEm", "bassEm", "bassC", "bassD", "bassB", "bassB"
+          ]
+        },
+        {
+          "name": "drums",
+          "wave": "noise",
+          "volume": 0.45,
+          "sequence": [
+            "beat", "beat", "beat", "beat", "beat", "beat", "beat", "fill",
+            "beat", "beat", "beat", "beat", "beat", "beat", "beat", "fill"
+          ]
+        }
       ]
     },
     {
       "name": "menu",
+      "bpm": 96,
       "loop": true,
-      "notes": [
-        { "pitch": "C4", "duration": 0.5, "wave": "triangle" },
-        { "pitch": "E4", "duration": 0.5, "wave": "triangle" },
-        { "pitch": "G4", "duration": 0.5, "wave": "triangle" },
-        { "pitch": "E4", "duration": 0.5, "wave": "triangle" },
-    
-        { "pitch": "D4", "duration": 0.5, "wave": "triangle" },
-        { "pitch": "F4", "duration": 0.5, "wave": "triangle" },
-        { "pitch": "A4", "duration": 0.5, "wave": "triangle" },
-        { "pitch": "F4", "duration": 0.5, "wave": "triangle" },
-    
-        { "pitch": "E4", "duration": 0.25, "wave": "square" },
-        { "pitch": "G4", "duration": 0.25, "wave": "square" },
-        { "pitch": "B4", "duration": 0.5, "wave": "square" },
-        { "pitch": "G4", "duration": 0.5, "wave": "square" },
-        { "pitch": "E4", "duration": 0.5, "wave": "square" },
-    
-        { "pitch": "C4", "duration": 0.25, "wave": "square" },
-        { "pitch": "D4", "duration": 0.25, "wave": "square" },
-        { "pitch": "E4", "duration": 0.25, "wave": "square" },
-        { "pitch": "G4", "duration": 0.25, "wave": "square" },
-        { "pitch": "C5", "duration": 1.0, "wave": "square" },
-    
-        { "pitch": "A4", "duration": 0.5, "wave": "triangle" },
-        { "pitch": "G4", "duration": 0.5, "wave": "triangle" },
-        { "pitch": "E4", "duration": 0.5, "wave": "triangle" },
-        { "pitch": "C4", "duration": 0.5, "wave": "triangle" },
-    
-        { "pitch": "D4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "F4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "A4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "C5", "duration": 0.25, "wave": "triangle" },
-    
-        { "pitch": "B4", "duration": 0.5, "wave": "square" },
-        { "pitch": "G4", "duration": 0.5, "wave": "square" },
-        { "pitch": "E4", "duration": 0.5, "wave": "square" },
-        { "pitch": "D4", "duration": 0.5, "wave": "square" },
-    
-        { "pitch": "C4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "E4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "G4", "duration": 0.25, "wave": "triangle" },
-        { "pitch": "C5", "duration": 0.25, "wave": "triangle" },
-    
-        { "pitch": "G4", "duration": 0.5, "wave": "triangle" },
-        { "pitch": "E4", "duration": 0.5, "wave": "triangle" },
-        { "pitch": "D4", "duration": 0.5, "wave": "triangle" },
-        { "pitch": "C4", "duration": 1.0, "wave": "triangle" }
+      "patterns": {
+        "leadA": "G4:4 C5:4 E5:8 | D5:4 C5:4 A4:8 | A4:6 C5:2 F5:8 | E5:4 D5:12 | G4:4 C5:4 G5:8 | E5:6 D5:2 C5:8 | A4:4 C5:4 F5:4 E5:4 | D5:12 r:4",
+        "leadB": "A5:8 G5:4 F5:4 | G5:8 F5:4 D5:4 | E5:8 D5:4 B4:4 | C5:6 B4:2 A4:8 | F5:6 E5:2 D5:4 A4:4 | B4:4 D5:4 G5:8 | G5:6 E5:2 C5:8 | D5:8 r:8",
+
+        "arpC": "C4:2 E4:2 G4:2 E4:2 C4:2 E4:2 G4:2 E4:2",
+        "arpAm": "A3:2 C4:2 E4:2 C4:2 A3:2 C4:2 E4:2 C4:2",
+        "arpF": "A3:2 C4:2 F4:2 C4:2 A3:2 C4:2 F4:2 C4:2",
+        "arpG": "G3:2 B3:2 D4:2 B3:2 G3:2 B3:2 D4:2 B3:2",
+        "arpEm": "G3:2 B3:2 E4:2 B3:2 G3:2 B3:2 E4:2 B3:2",
+        "arpDm": "A3:2 D4:2 F4:2 D4:2 A3:2 D4:2 F4:2 D4:2",
+
+        "bassC": "C3:6 C3:2 G2:8",
+        "bassAm": "A2:6 A2:2 E3:8",
+        "bassF": "F2:6 F2:2 C3:8",
+        "bassG": "G2:6 G2:2 D3:8",
+        "bassEm": "E2:6 E2:2 B2:8",
+        "bassDm": "D3:6 D3:2 A2:8",
+
+        "silent": "r:128",
+        "hats": "r:2 h:2 r:2 h:2 r:2 h:2 r:2 h:2"
+      },
+      "channels": [
+        {
+          "name": "lead",
+          "wave": "triangle",
+          "volume": 0.7,
+          "vibrato": true,
+          "sustain": 0.8,
+          "sequence": ["leadA", "leadB"]
+        },
+        {
+          "name": "arp",
+          "wave": "pulse",
+          "duty": 0.125,
+          "volume": 0.15,
+          "gate": 0.55,
+          "sequence": [
+            "arpC", "arpAm", "arpF", "arpG", "arpC", "arpAm", "arpF", "arpG",
+            "arpF", "arpG", "arpEm", "arpAm", "arpDm", "arpG", "arpC", "arpG"
+          ]
+        },
+        {
+          "name": "bass",
+          "wave": "triangle",
+          "volume": 0.6,
+          "gate": 0.95,
+          "sustain": 0.85,
+          "sequence": [
+            "bassC", "bassAm", "bassF", "bassG", "bassC", "bassAm", "bassF", "bassG",
+            "bassF", "bassG", "bassEm", "bassAm", "bassDm", "bassG", "bassC", "bassG"
+          ]
+        },
+        {
+          "name": "drums",
+          "wave": "noise",
+          "volume": 0.3,
+          "sequence": [
+            "silent",
+            "hats", "hats", "hats", "hats", "hats", "hats", "hats", "hats"
+          ]
+        }
       ]
     }
   ]
