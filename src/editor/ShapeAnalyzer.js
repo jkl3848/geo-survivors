@@ -304,16 +304,6 @@ export function processShape(grid, width, height) {
   return result || filled;
 }
 
-export function applyColorTraits(stats, traits) {
-  const result = { ...stats };
-  for (const [key, value] of Object.entries(traits || {})) {
-    if (result[key] !== undefined) {
-      result[key] *= (1 + value);
-    }
-  }
-  return result;
-}
-
 export function createPixelArtCanvas(body, width, height, color = '#5dade2') {
   const canvas = document.createElement('canvas');
   canvas.width = width;

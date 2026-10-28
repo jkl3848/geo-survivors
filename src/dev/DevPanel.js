@@ -144,6 +144,34 @@ export class DevPanel {
       section.appendChild(row);
     });
 
+    this._addSection("Meta", (section) => {
+      this.metaStatus = document.createElement("p");
+      this.metaStatus.style.cssText = "margin:0;color:#f1c40f;font-size:11px;";
+      section.appendChild(this.metaStatus);
+
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;";
+      row.appendChild(
+        this._makeButton("Grant 100 shards", () => {
+          this.actions.grantShards?.();
+          this._flashStatus(this.metaStatus, "Granted 100 shards");
+        }),
+      );
+      row.appendChild(
+        this._makeButton("Unlock all", () => {
+          const count = this.actions.unlockAll?.() || 0;
+          this._flashStatus(this.metaStatus, `Unlocked ${count}`);
+        }),
+      );
+      row.appendChild(
+        this._makeButton("Reset save", () => {
+          this.actions.resetSave?.();
+          this._refresh();
+        }),
+      );
+      section.appendChild(row);
+    });
+
     this._addSection("Quick actions", (section) => {
       const row = document.createElement("div");
       row.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;";
@@ -253,6 +281,9 @@ export class DevPanel {
 
     this.enemyLevelInput.value = String(state.enemyLevel);
     this.enemyLevelStatus.textContent = `Elapsed: ${state.elapsed.toFixed(1)}s`;
+    if (this.metaStatus) {
+      this.metaStatus.textContent = `Shards: ${state.shards ?? 0}`;
+    }
   }
 
   show() {

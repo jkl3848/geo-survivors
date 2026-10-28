@@ -5,7 +5,7 @@ export class HUD {
     this.barHeight = 48;
   }
 
-  draw(player, timeRemaining, enemyLevel, levelSystem, timerComplete = false) {
+  draw(player, timeRemaining, enemyLevel, levelSystem, timerComplete = false, abilityHud = null) {
     const ctx = this.ctx;
     const w = this.width;
 
@@ -73,5 +73,84 @@ export class HUD {
       lvlX,
       xpY + xpBarH + 12,
     );
+
+    if (abilityHud) this._drawAbility(abilityHud, w);
+  }
+
+  _drawAbility(ability, canvasWidth) {
+    const ctx = this.ctx;
+    const boxW = 160;
+    const boxH = 46;
+    const x = Math.round((canvasWidth - boxW) / 2);
+    const y = this.barHeight + 10;
+    const ready = ability.ready;
+    const flash = ready && Math.floor(performance.now() / 350) % 2 === 0;
+
+    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    ctx.fillRect(x, y, boxW, boxH);
+    ctx.strokeStyle = flash ? "#fff" : (ability.color || "#5dade2");
+    ctx.lineWidth = ready ? 2 : 1;
+    ctx.strokeRect(x, y, boxW, boxH);
+
+    ctx.fillStyle = ability.color || "#5dade2";
+    ctx.font = "bold 12px Courier New";
+    ctx.textAlign = "left";
+    ctx.fillText(ability.name, x + 8, y + 16);
+
+    ctx.fillStyle = "#888";
+    ctx.font = "10px Courier New";
+    ctx.fillText("SPACE", x + 8, y + 38);
+
+    if (ability.maxCharges > 1) {
+      const pipY = y + 22;
+      for (let i = 0; i < ability.maxCharges; i++) {
+        const px = x + 58 + i * 14;
+        ctx.fillStyle = i < ability.charges ? (ability.color || "#5dade2") : "#333";
+        ctx.fillRect(px, pipY, 10, 10);
+        ctx.strokeStyle = "#555";
+        ctx.strokeRect(px, pipY, 10, 10);
+      }
+      if (!ready && ability.cooldownLeft > 0) {
+        ctx.fillStyle = "#aaa";
+        ctx.font = "9px Courier New";
+        ctx.fillText(`${ability.cooldownLeft.toFixed(1)}s`, x + 58, y + 40);
+      }
+    } else {
+      const barX = x + 58;
+      const barW = 94;
+      const barH = 10;
+      const barY = y + 24;
+      const pct =
+        ability.cooldown > 0
+          ? 1 - Math.min(1, ability.cooldownLeft / ability.cooldown)
+          : 1;
+      ctx.fillStyle = "#333";
+      ctx.fillRect(barX, barY, barW, barH);
+      ctx.fillStyle = ready ? (ability.color || "#5dade2") : "#7f8c8d";
+      ctx.fillRect(barX, barY, barW * (ready ? 1 : pct), barH);
+      ctx.strokeStyle = "#555";
+      ctx.strokeRect(barX, barY, barW, barH);
+      if (!ready && ability.cooldownLeft > 0) {
+        ctx.fillStyle = "#ecf0f1";
+        ctx.font = "9px Courier New";
+        ctx.textAlign = "center";
+        ctx.fillText(ability.cooldownLeft.toFixed(1), barX + barW / 2, barY + 8);
+        ctx.textAlign = "left";
+      }
+    }
+  }
+
+  drawToasts(toasts) {
+    if (!toasts?.length) return;
+    const ctx = this.ctx;
+    ctx.textAlign = "center";
+    ctx.font = "bold 14px Courier New";
+    let toastY = this.barHeight + 22;
+    for (const toast of toasts) {
+      ctx.fillStyle = "#f1c40f";
+      ctx.fillText(toast.text, this.width / 2, toastY);
+      toastY += 18;
+    }
+    ctx.textAlign = "left";
   }
 }

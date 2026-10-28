@@ -1,0 +1,115 @@
+{
+  "difficulties": [
+    {
+      "id": "normal",
+      "name": "Normal",
+      "hp": 1,
+      "attack": 1,
+      "spawnRate": 1,
+      "shardMultiplier": 1
+    },
+    {
+      "id": "hard",
+      "name": "Hard",
+      "hp": 1.5,
+      "attack": 1.3,
+      "spawnRate": 1.25,
+      "shardMultiplier": 2
+    }
+  ],
+  "shop": [
+    {
+      "id": "reroll",
+      "name": "Reroll",
+      "description": "Reroll the cards on a level-up. Each level adds one charge per run.",
+      "maxLevel": 3,
+      "costs": [40, 80, 140]
+    },
+    {
+      "id": "skip",
+      "name": "Skip",
+      "description": "Skip a level-up and heal 15% of max HP. One charge per run.",
+      "maxLevel": 1,
+      "costs": [60]
+    },
+    {
+      "id": "extra_card",
+      "name": "Fourth Choice",
+      "description": "See 4 upgrades instead of 3 when you level up.",
+      "maxLevel": 1,
+      "costs": [200]
+    }
+  ],
+  "achievements": [
+    {
+      "id": "survive_3_min",
+      "name": "Warming Up",
+      "hint": "Survive 3 minutes",
+      "condition": { "type": "survive", "minutes": 3 },
+      "reward": { "shards": 10, "colors": ["crimson"] }
+    },
+    {
+      "id": "survive_5_min",
+      "name": "Finding Rhythm",
+      "hint": "Survive 5 minutes",
+      "condition": { "type": "survive", "minutes": 5 },
+      "reward": { "shards": 15, "colors": ["emerald"] }
+    },
+    {
+      "id": "survive_8_min",
+      "name": "Endurance",
+      "hint": "Survive 8 minutes",
+      "condition": { "type": "survive", "minutes": 8 },
+      "reward": { "shards": 20, "colors": ["violet"] }
+    },
+    {
+      "id": "reach_level_10",
+      "name": "Seasoned",
+      "hint": "Reach level 10",
+      "condition": { "type": "level", "level": 10 },
+      "reward": { "shards": 15, "colors": ["obsidian"] }
+    },
+    {
+      "id": "boss_square",
+      "name": "Giant Slayer",
+      "hint": "Defeat the square boss",
+      "condition": { "type": "bossKill", "typeId": "boss_square" },
+      "reward": { "shards": 25, "colors": ["ivory"] }
+    },
+    {
+      "id": "reach_level_20",
+      "name": "Ascendant",
+      "hint": "Reach level 20",
+      "condition": { "type": "level", "level": 20 },
+      "reward": { "shards": 25, "colors": ["amber"] }
+    },
+    {
+      "id": "total_kills_1000",
+      "name": "Exterminator",
+      "hint": "Defeat 1000 enemies",
+      "condition": { "type": "totalKills", "count": 1000 },
+      "reward": { "shards": 30, "colors": ["rose"] }
+    },
+    {
+      "id": "path_focus",
+      "name": "Specialist",
+      "hint": "Take 6 upgrades in one path during a run",
+      "condition": { "type": "pathPicks", "count": 6 },
+      "reward": { "shards": 20, "colors": ["cobalt"] }
+    },
+    {
+      "id": "win",
+      "name": "Survivor",
+      "hint": "Win a run",
+      "condition": { "type": "win" },
+      "reward": { "shards": 40, "colors": ["gold"], "difficulty": "hard" }
+    },
+    {
+      "id": "hard_win",
+      "name": "Untouchable",
+      "hint": "Win a run on Hard",
+      "condition": { "type": "hardWin" },
+      "reward": { "shards": 50, "colors": ["solar"] }
+    }
+  ]
+}

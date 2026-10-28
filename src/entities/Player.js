@@ -16,6 +16,7 @@ export class Player {
     this.fireCooldown = 0;
     this.upgradeStacks = {};
     this.specialAbilities = {};
+    this.abilityMods = {};
     this.combat = emptyCombat();
     this.pixelArt = null;
     this.bodyBounds = null;
@@ -24,6 +25,10 @@ export class Player {
     this.displayHeight = 16;
     this.hitFlash = 0;
     this.hitFlashDuration = 0.15;
+    this.invulnTimer = 0;
+    this.speedMult = 1;
+    this.attackSpeedBonus = 0;
+    this.damageBonus = 0;
     this.alive = true;
   }
 
@@ -38,6 +43,10 @@ export class Player {
     this.color = color;
     this.hitFlashDuration = playerConfig.hitFlashDuration || 0.15;
     this.hitFlash = 0;
+    this.invulnTimer = 0;
+    this.speedMult = 1;
+    this.attackSpeedBonus = 0;
+    this.damageBonus = 0;
 
     const maxDim = Math.max(bodyBounds.width, bodyBounds.height, 1);
     const minSize = playerConfig.minDisplaySize || 14;
@@ -54,8 +63,13 @@ export class Player {
     this.fireCooldown = 0;
     this.upgradeStacks = {};
     this.specialAbilities = {};
+    this.abilityMods = {};
     this.combat = emptyCombat(combatDefaults);
     this.alive = true;
+  }
+
+  isInvulnerable() {
+    return this.invulnTimer > 0;
   }
 
   hasSpecial(effect) {
@@ -74,6 +88,11 @@ export class Player {
     if (upgrade.combat) {
       for (const [key, value] of Object.entries(upgrade.combat)) {
         this.combat[key] = (this.combat[key] || 0) + value;
+      }
+    }
+    if (upgrade.ability) {
+      for (const [key, value] of Object.entries(upgrade.ability)) {
+        this.abilityMods[key] = (this.abilityMods[key] || 0) + value;
       }
     }
     if (upgrade.modifiers) this._applyModifiers(upgrade, modifierMode);
@@ -156,7 +175,7 @@ export class Player {
     if (!this.alive) return;
 
     const move = input.getMovement();
-    const speed = this.getStat("speed");
+    const speed = this.getStat("speed") * (this.speedMult || 1);
     this.x += move.x * speed * dt;
     this.y += move.y * speed * dt;
     wrapPosition(this, worldW, worldH);
@@ -174,6 +193,10 @@ export class Player {
       this.fireCooldown -= dt;
     }
 
+    if (this.invulnTimer > 0) {
+      this.invulnTimer = Math.max(0, this.invulnTimer - dt);
+    }
+
     if (this.hitFlash > 0) {
       this.hitFlash = Math.max(0, this.hitFlash - dt);
     }
@@ -184,7 +207,7 @@ export class Player {
   }
 
   resetFireCooldown() {
-    const rate = this.getStat("attackSpeed");
+    const rate = this.getStat("attackSpeed") * (1 + (this.attackSpeedBonus || 0));
     this.fireCooldown = rate > 0 ? 1 / rate : 1;
   }
 }

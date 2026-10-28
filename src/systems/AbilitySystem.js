@@ -99,6 +99,8 @@ export class AbilitySystem {
       if (status.freeze > 0) status.freeze = Math.max(0, status.freeze - dt);
       if (status.slow > 0) status.slow = Math.max(0, status.slow - dt);
       if (status.shock > 0) status.shock = Math.max(0, status.shock - dt);
+      if (status.stun > 0) status.stun = Math.max(0, status.stun - dt);
+      if (status.charm > 0) status.charm = Math.max(0, status.charm - dt);
       if (status.slow <= 0) status.slowAmount = 0;
 
       const burn = status.burn;
@@ -266,6 +268,9 @@ export class AbilitySystem {
     let damage = amount;
     let isCrit = false;
 
+    if (this.player.damageBonus > 0) {
+      damage *= 1 + this.player.damageBonus;
+    }
     if (ctx.allowCrit !== false && Math.random() < (combat.critChance || 0)) {
       isCrit = true;
       damage *= combat.critMultiplier || 1.5;
@@ -275,6 +280,10 @@ export class AbilitySystem {
     }
     if ((enemy.status?.freeze || 0) > 0 && combat.shatterBonus > 0) {
       damage *= 1 + combat.shatterBonus;
+    }
+    if ((enemy.status?.charm || 0) > 0) {
+      const heartache = this.player.abilityMods?.heartache || 0;
+      if (heartache > 0) damage *= 1 + heartache;
     }
     if (
       combat.thermalShock > 0 &&

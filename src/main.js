@@ -1,24 +1,27 @@
 import { CharacterEditor } from './editor/CharacterEditor.js';
 import { Game } from './game/Game.js';
 import { MusicPlayer } from './audio/MusicPlayer.js';
+import { MetaProgress } from './meta/MetaProgress.js';
 
 async function loadConfigs() {
   const base = import.meta.env.BASE_URL;
-  const [stats, enemies, upgrades, spawn, music, colors] = await Promise.all([
+  const [stats, enemies, upgrades, spawn, music, colors, meta] = await Promise.all([
     fetch(`${base}config/stats.json`).then((r) => r.json()),
     fetch(`${base}config/enemies.json`).then((r) => r.json()),
     fetch(`${base}config/upgrades.json`).then((r) => r.json()),
     fetch(`${base}config/spawn.json`).then((r) => r.json()),
     fetch(`${base}config/music.json`).then((r) => r.json()),
     fetch(`${base}config/colors.json`).then((r) => r.json()),
+    fetch(`${base}config/meta.json`).then((r) => r.json()),
   ]);
-  return { stats, enemies, upgrades, spawn, music, colors };
+  return { stats, enemies, upgrades, spawn, music, colors, meta };
 }
 
 class App {
   constructor() {
     this.app = document.getElementById('app');
     this.configs = null;
+    this.meta = null;
     this.editor = null;
     this.game = null;
     this.canvas = null;
@@ -27,6 +30,7 @@ class App {
 
   async init() {
     this.configs = await loadConfigs();
+    this.meta = new MetaProgress(this.configs.meta, this.configs.colors);
     await this.music.init(this.configs.music);
     this.showEditor();
   }
@@ -35,9 +39,16 @@ class App {
     this._cleanup();
 
     this.app.innerHTML = '';
-    this.editor = new CharacterEditor(this.app, this.configs.stats, this.configs.colors, (characterData) => {
-      this.startGame(characterData);
-    });
+    this.editor = new CharacterEditor(
+      this.app,
+      this.configs.stats,
+      this.configs.colors,
+      this.meta,
+      this.configs.upgrades,
+      (characterData) => {
+        this.startGame(characterData);
+      },
+    );
     this._unlockMenuMusic();
   }
 
@@ -60,7 +71,7 @@ class App {
 
     this.game = new Game(this.canvas, this.configs, characterData, () => {
       this.showEditor();
-    }, this.music);
+    }, this.music, this.meta);
 
     await this.music.unlock();
     await this.game.start();

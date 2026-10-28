@@ -16,6 +16,15 @@
       "description": "+30% max HP and defense",
       "modifiers": { "hp": 0.3, "defense": 0.3 },
       "rarity": 6
+    },
+    {
+      "id": "bounty",
+      "name": "Bounty",
+      "description": "+20% max HP, attack, and XP gain",
+      "modifiers": { "hp": 0.2, "attack": 0.2, "xpGain": 0.2 },
+      "rarity": 6,
+      "maxStacks": 1,
+      "unlockedBy": "hard_win"
     }
   ],
   "specialPool": [
@@ -119,6 +128,37 @@
       "tags": ["gunner"],
       "rarity": 6,
       "maxStacks": 2
+    },
+    {
+      "id": "permafrost",
+      "name": "Permafrost",
+      "description": "Hits freeze more often, and slows cut deeper.",
+      "combat": { "freezeChance": 0.12, "freezeDuration": 0.4, "slowAmount": 0.18, "slowChance": 0.1 },
+      "tags": ["frost"],
+      "rarity": 6,
+      "maxStacks": 2,
+      "unlockedBy": "path_focus"
+    },
+    {
+      "id": "inferno",
+      "name": "Inferno",
+      "description": "Burns and blasts deal much more damage.",
+      "combat": { "burnDps": 0.6, "burnChance": 0.1, "explosionDamage": 0.45 },
+      "tags": ["fire"],
+      "rarity": 6,
+      "maxStacks": 2,
+      "unlockedBy": "total_kills_1000"
+    },
+    {
+      "id": "supercell",
+      "name": "Supercell",
+      "description": "Arcs jump farther and strike much harder.",
+      "modifiers": { "attackSpeed": 0.2 },
+      "combat": { "chainJumps": 2, "chainDamage": 0.35, "chainChance": 0.15 },
+      "tags": ["lightning"],
+      "rarity": 6,
+      "maxStacks": 2,
+      "unlockedBy": "win"
     }
   ],
   "pool": [
@@ -541,6 +581,357 @@
       "description": "+25% XP gain",
       "modifiers": { "xpGain": 0.25 },
       "rarity": 5
+    },
+    {
+      "id": "glass_cannon",
+      "name": "Glass Cannon",
+      "description": "+60% attack, -25% max HP",
+      "modifiers": { "attack": 0.6, "hp": -0.25 },
+      "rarity": 5,
+      "maxStacks": 1,
+      "unlockedBy": "boss_square"
+    },
+    {
+      "id": "fan_of_knives",
+      "name": "Fan of Knives",
+      "description": "Fire extra shots forward and to both sides.",
+      "combat": { "forwardShots": 1, "sideShots": 1 },
+      "tags": ["gunner"],
+      "rarity": 5,
+      "maxStacks": 1,
+      "unlockedBy": "reach_level_20"
+    }
+  ],
+  "characterPool": [
+    {
+      "id": "azure_lasting_barrier",
+      "name": "Lasting Barrier",
+      "description": "Barrier lasts longer.",
+      "character": "azure",
+      "ability": { "duration": 0.5 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 3
+    },
+    {
+      "id": "azure_quick_recharge",
+      "name": "Quick Recharge",
+      "description": "Barrier recharges faster.",
+      "character": "azure",
+      "ability": { "cooldown": -1.5 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 3
+    },
+    {
+      "id": "azure_repelling_barrier",
+      "name": "Repelling Barrier",
+      "description": "Enemies that touch the barrier are knocked back and take damage.",
+      "character": "azure",
+      "ability": { "repelDamage": 0.5, "knockback": 180 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "crimson_frenzy",
+      "name": "Frenzy",
+      "description": "Bloodlust lasts longer and raises attack speed more.",
+      "character": "crimson",
+      "ability": { "duration": 0.75, "attackSpeedBonus": 0.1 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 3
+    },
+    {
+      "id": "crimson_leech",
+      "name": "Leech",
+      "description": "Kills during Bloodlust heal you.",
+      "character": "crimson",
+      "ability": { "leech": 0.015 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "crimson_thick_blood",
+      "name": "Thick Blood",
+      "description": "Bloodlust costs less HP and recharges faster.",
+      "character": "crimson",
+      "ability": { "hpCost": -0.04, "cooldown": -1.5 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "emerald_wild_growth",
+      "name": "Wild Growth",
+      "description": "Overgrowth is larger and lasts longer.",
+      "character": "emerald",
+      "ability": { "radius": 20, "duration": 1 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 3
+    },
+    {
+      "id": "emerald_thorns",
+      "name": "Thorns",
+      "description": "Enemies in the grove take damage over time.",
+      "character": "emerald",
+      "ability": { "thorns": 0.4 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "emerald_lifebloom",
+      "name": "Lifebloom",
+      "description": "The grove heals more and recharges faster.",
+      "character": "emerald",
+      "ability": { "healPerSec": 0.015, "cooldown": -2 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "gold_big_payout",
+      "name": "Big Payout",
+      "description": "Jackpot grants more bonus XP.",
+      "character": "gold",
+      "ability": { "xpBonus": 0.25 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 3
+    },
+    {
+      "id": "gold_coin_burst",
+      "name": "Coin Burst",
+      "description": "Activating Jackpot fires gold coins outward.",
+      "character": "gold",
+      "ability": { "coins": 8 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "gold_compound_interest",
+      "name": "Compound Interest",
+      "description": "Jackpot recharges faster.",
+      "character": "gold",
+      "ability": { "cooldown": -4 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "violet_event_horizon",
+      "name": "Event Horizon",
+      "description": "Gravity Well is larger and pulls harder.",
+      "character": "violet",
+      "ability": { "radius": 25, "pull": 50 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 3
+    },
+    {
+      "id": "violet_collapse",
+      "name": "Collapse",
+      "description": "When the well ends it implodes for heavy damage.",
+      "character": "violet",
+      "ability": { "collapseDamage": 1.5 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "violet_lingering_void",
+      "name": "Lingering Void",
+      "description": "Gravity Well lasts longer and recharges faster.",
+      "character": "violet",
+      "ability": { "duration": 1, "cooldown": -1.5 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "obsidian_bedrock",
+      "name": "Bedrock",
+      "description": "Tremor reaches farther and stuns longer.",
+      "character": "obsidian",
+      "ability": { "radius": 20, "stun": 0.2 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 3
+    },
+    {
+      "id": "obsidian_aftershock",
+      "name": "Aftershock",
+      "description": "A second slam follows shortly after.",
+      "character": "obsidian",
+      "ability": { "aftershock": 0.6 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "obsidian_heavy_hands",
+      "name": "Heavy Hands",
+      "description": "Tremor deals much more damage.",
+      "character": "obsidian",
+      "ability": { "damage": 0.6 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "ivory_second_wind",
+      "name": "Second Wind",
+      "description": "Store an extra Phase Dash charge.",
+      "character": "ivory",
+      "ability": { "charges": 1 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "ivory_afterimage",
+      "name": "Afterimage",
+      "description": "Enemies you dash through take damage.",
+      "character": "ivory",
+      "ability": { "dashDamage": 0.8 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "ivory_fleet",
+      "name": "Fleet",
+      "description": "Dash farther and recharge faster.",
+      "character": "ivory",
+      "ability": { "cooldown": -0.8, "distance": 25 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 3
+    },
+    {
+      "id": "amber_reinforced_frame",
+      "name": "Reinforced Frame",
+      "description": "Sentry lasts longer.",
+      "character": "amber",
+      "ability": { "duration": 2 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 3
+    },
+    {
+      "id": "amber_twin_barrels",
+      "name": "Twin Barrels",
+      "description": "Sentry fires an extra shot per volley.",
+      "character": "amber",
+      "ability": { "shots": 1 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "amber_smart_rounds",
+      "name": "Smart Rounds",
+      "description": "Sentry shots proc on-hit effects and fire faster.",
+      "character": "amber",
+      "ability": { "smart": 1, "fireRate": 0.5 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "rose_infatuation",
+      "name": "Infatuation",
+      "description": "Heartbreak charms longer and farther.",
+      "character": "rose",
+      "ability": { "duration": 0.5, "radius": 20 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 3
+    },
+    {
+      "id": "rose_heartache",
+      "name": "Heartache",
+      "description": "Charmed enemies take more damage.",
+      "character": "rose",
+      "ability": { "heartache": 0.2 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "rose_self_love",
+      "name": "Self-Love",
+      "description": "Activating Heartbreak heals you.",
+      "character": "rose",
+      "ability": { "healOnCast": 0.05 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "cobalt_echo",
+      "name": "Echo",
+      "description": "Leave a blast at the spot you rewind from.",
+      "character": "cobalt",
+      "ability": { "echoDamage": 1.2 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "cobalt_paradox",
+      "name": "Paradox",
+      "description": "Gain brief invulnerability after rewinding.",
+      "character": "cobalt",
+      "ability": { "paradox": 0.6 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "cobalt_time_loop",
+      "name": "Time Loop",
+      "description": "Rewind recharges faster.",
+      "character": "cobalt",
+      "ability": { "cooldown": -2.5 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 3
+    },
+    {
+      "id": "solar_corona",
+      "name": "Corona",
+      "description": "Solar Flare lasts longer and is wider.",
+      "character": "solar",
+      "ability": { "duration": 0.4, "width": 10 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 3
+    },
+    {
+      "id": "solar_sunspot",
+      "name": "Sunspot",
+      "description": "The beam sets enemies on fire.",
+      "character": "solar",
+      "ability": { "sunspot": 1 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
+    },
+    {
+      "id": "solar_focused_light",
+      "name": "Focused Light",
+      "description": "Beam ticks harder and recharges faster.",
+      "character": "solar",
+      "ability": { "damage": 0.3, "cooldown": -1.5 },
+      "tags": ["ability"],
+      "rarity": 3,
+      "maxStacks": 2
     }
   ]
 }
